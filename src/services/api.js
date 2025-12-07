@@ -201,13 +201,23 @@ export const getServiceDemandAnalytics = () => {
 };
 
 // Get all decorators (admin only)
-export const getAllDecorators = () => {
-  return apiRequest('/admin/decorators');
+export const getAllDecorators = async () => {
+  try {
+    return await apiRequest('/admin/decorators');
+  } catch (error) {
+    console.warn('Get all decorators endpoint not available:', error.message);
+    return { data: [] };
+  }
 };
 
 // Get all users (admin only)
-export const getAllUsers = () => {
-  return apiRequest('/admin/users');
+export const getAllUsers = async () => {
+  try {
+    return await apiRequest('/admin/users');
+  } catch (error) {
+    console.warn('Get all users endpoint not available:', error.message);
+    return { data: [] };
+  }
 };
 
 // Public decorator endpoints (if available)
