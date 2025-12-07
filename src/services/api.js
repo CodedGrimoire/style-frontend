@@ -200,3 +200,16 @@ export const getServiceDemandAnalytics = () => {
   return apiRequest('/admin/analytics/service-demand');
 };
 
+// Public decorator endpoints (if available)
+// Note: This endpoint might not exist - placeholder for future implementation
+export const getTopDecorators = async () => {
+  try {
+    // Try public endpoint first
+    return await apiRequest('/decorators/top');
+  } catch (error) {
+    // If endpoint doesn't exist, return empty array
+    console.warn('Top decorators endpoint not available:', error.message);
+    return { data: [] };
+  }
+};
+
