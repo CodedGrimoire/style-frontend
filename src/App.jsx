@@ -26,7 +26,7 @@ function App() {
       <Router>
         <div>
           <Navbar />
-          <div style={{ paddingTop: '80px' }}>
+          <div style={{ paddingTop: '80px', minHeight: 'calc(100vh - 80px)' }}>
             <AuthErrorBanner />
             <Routes>
             <Route path="/" element={<HomePage />} />

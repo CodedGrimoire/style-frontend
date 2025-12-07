@@ -1,232 +1,81 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
     setShowDropdown(false);
+    setShowMobileMenu(false);
   };
 
   return (
-    <nav style={{ 
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      width: '100%',
-      padding: '0.75rem 2rem', 
-      borderBottom: '1px solid #ccc',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      zIndex: 1000,
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
+    <nav className="navbar">
       {/* Logo & Brand Name */}
-      <Link 
-        to="/" 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.75rem',
-          textDecoration: 'none',
-          color: 'inherit'
-        }}
-      >
+      <Link to="/" className="navbar-brand">
         <img 
           src="/logo.jpeg" 
           alt="StyleDecor Logo" 
-          style={{ 
-            height: '40px', 
-            width: 'auto' 
-          }}
+          className="navbar-logo"
           onError={(e) => {
-            // Fallback if logo doesn't exist
             e.target.style.display = 'none';
           }}
         />
-        <span style={{ 
-          fontSize: '1.5rem', 
-          fontWeight: 'bold',
-          color: '#333'
-        }}>
-          StyleDecor
-        </span>
+        <span className="navbar-brand-text">StyleDecor</span>
       </Link>
 
-      {/* Navigation Menu */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '2rem',
-        alignItems: 'center'
-      }}>
-        <Link 
-          to="/" 
-          style={{ 
-            textDecoration: 'none', 
-            color: '#333',
-            fontWeight: '500',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = '#007bff'}
-          onMouseLeave={(e) => e.target.style.color = '#333'}
-        >
-          Home
-        </Link>
-        <Link 
-          to="/services" 
-          style={{ 
-            textDecoration: 'none', 
-            color: '#333',
-            fontWeight: '500',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = '#007bff'}
-          onMouseLeave={(e) => e.target.style.color = '#333'}
-        >
-          Services
-        </Link>
-        <Link 
-          to="/about" 
-          style={{ 
-            textDecoration: 'none', 
-            color: '#333',
-            fontWeight: '500',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = '#007bff'}
-          onMouseLeave={(e) => e.target.style.color = '#333'}
-        >
-          About
-        </Link>
-        <Link 
-          to="/contact" 
-          style={{ 
-            textDecoration: 'none', 
-            color: '#333',
-            fontWeight: '500',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => e.target.style.color = '#007bff'}
-          onMouseLeave={(e) => e.target.style.color = '#333'}
-        >
-          Contact
-        </Link>
+      {/* Desktop Navigation Menu */}
+      <div className="navbar-menu">
+        <Link to="/" className="navbar-link">Home</Link>
+        <Link to="/services" className="navbar-link">Services</Link>
+        <Link to="/about" className="navbar-link">About</Link>
+        <Link to="/contact" className="navbar-link">Contact</Link>
       </div>
 
-      {/* Dashboard & Profile Dropdown */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center',
-        gap: '1rem',
-        position: 'relative'
-      }}>
+      {/* Desktop Dashboard & Profile */}
+      <div className="navbar-actions">
         {user ? (
           <>
-            <Link 
-              to="/dashboard" 
-              style={{ 
-                textDecoration: 'none', 
-                color: '#333',
-                fontWeight: '500',
-                padding: '0.5rem 1rem',
-                borderRadius: '4px',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-            >
+            <Link to="/dashboard" className="navbar-dashboard-btn">
               Dashboard
             </Link>
-            <div style={{ position: 'relative' }}>
+            <div className="navbar-dropdown">
               <button
+                className="navbar-profile-btn"
                 onClick={() => setShowDropdown(!showDropdown)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 1rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
               >
                 <span>{user.displayName || user.email?.split('@')[0] || 'Profile'}</span>
-                <span>▼</span>
+                <span className="dropdown-arrow">▼</span>
               </button>
               
               {showDropdown && (
                 <>
                   <div
-                    style={{
-                      position: 'fixed',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      zIndex: 999
-                    }}
+                    className="dropdown-overlay"
                     onClick={() => setShowDropdown(false)}
                   />
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    marginTop: '0.5rem',
-                    backgroundColor: '#fff',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    minWidth: '200px',
-                    zIndex: 1000
-                  }}>
-                    <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #eee' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        {user.displayName || 'User'}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
-                        {user.email}
-                      </div>
+                  <div className="dropdown-menu">
+                    <div className="dropdown-header">
+                      <div className="dropdown-name">{user.displayName || 'User'}</div>
+                      <div className="dropdown-email">{user.email}</div>
                     </div>
                     <Link
                       to="/dashboard"
                       onClick={() => setShowDropdown(false)}
-                      style={{
-                        display: 'block',
-                        padding: '0.75rem 1rem',
-                        textDecoration: 'none',
-                        color: '#333',
-                        borderBottom: '1px solid #eee',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                      className="dropdown-item"
                     >
                       My Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        border: 'none',
-                        backgroundColor: 'transparent',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        color: '#d32f2f',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#ffe6e6'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                      className="dropdown-item dropdown-item-danger"
                     >
                       Sign Out
                     </button>
@@ -236,74 +85,32 @@ const Navbar = () => {
             </div>
           </>
         ) : (
-          <div style={{ position: 'relative' }}>
+          <div className="navbar-dropdown">
             <button
+              className="navbar-login-btn"
               onClick={() => setShowDropdown(!showDropdown)}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
             >
-              Login <span>▼</span>
+              Login <span className="dropdown-arrow">▼</span>
             </button>
             
             {showDropdown && (
               <>
                 <div
-                  style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 999
-                  }}
+                  className="dropdown-overlay"
                   onClick={() => setShowDropdown(false)}
                 />
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '0.5rem',
-                  backgroundColor: '#fff',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                  minWidth: '150px',
-                  zIndex: 1000
-                }}>
+                <div className="dropdown-menu">
                   <Link
                     to="/login"
                     onClick={() => setShowDropdown(false)}
-                    style={{
-                      display: 'block',
-                      padding: '0.75rem 1rem',
-                      textDecoration: 'none',
-                      color: '#333',
-                      borderBottom: '1px solid #eee',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    className="dropdown-item"
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setShowDropdown(false)}
-                    style={{
-                      display: 'block',
-                      padding: '0.75rem 1rem',
-                      textDecoration: 'none',
-                      color: '#333',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    className="dropdown-item"
                   >
                     Sign Up
                   </Link>
@@ -313,9 +120,103 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {/* Mobile Menu Button */}
+      <button
+        className="navbar-mobile-toggle"
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+        aria-label="Toggle menu"
+      >
+        <span className={showMobileMenu ? 'hamburger active' : 'hamburger'}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <>
+          <div
+            className="mobile-menu-overlay"
+            onClick={() => setShowMobileMenu(false)}
+          />
+          <div className="mobile-menu">
+            <Link
+              to="/"
+              className="mobile-menu-link"
+              onClick={() => setShowMobileMenu(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/services"
+              className="mobile-menu-link"
+              onClick={() => setShowMobileMenu(false)}
+            >
+              Services
+            </Link>
+            <Link
+              to="/about"
+              className="mobile-menu-link"
+              onClick={() => setShowMobileMenu(false)}
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="mobile-menu-link"
+              onClick={() => setShowMobileMenu(false)}
+            >
+              Contact
+            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="mobile-menu-link"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  Dashboard
+                </Link>
+                <div className="mobile-menu-user">
+                  <div className="mobile-menu-user-info">
+                    <div className="mobile-menu-user-name">
+                      {user.displayName || 'User'}
+                    </div>
+                    <div className="mobile-menu-user-email">{user.email}</div>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="mobile-menu-signout"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="mobile-menu-link"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="mobile-menu-link mobile-menu-link-primary"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </nav>
   );
 };
 
 export default Navbar;
-

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getServices } from '../services/api';
 import Loading from '../components/Loading';
+import '../styles/pages.css';
 
 const HomePage = () => {
   const [featuredServices, setFeaturedServices] = useState([]);
@@ -24,66 +25,71 @@ const HomePage = () => {
   if (loading) return <Loading />;
 
   return (
-    <div>
+    <div className="page-container">
       {/* Hero Section */}
-      <section style={{ 
-        padding: '4rem 2rem', 
-        textAlign: 'center',
-        background: '#f5f5f5'
-      }}>
-        <h1>Welcome to StyleDecor</h1>
-        <p>Transform your space with our professional decoration services</p>
-        <Link to="/services">
-          <button>Book Your Decoration Service Today</button>
-        </Link>
+      <section className="hero-section">
+        <div className="container">
+          <div className="hero-content">
+            <h1 className="hero-title">Welcome to StyleDecor</h1>
+            <p className="hero-subtitle">
+              Transform your space with our professional decoration services
+            </p>
+            <Link to="/services" className="btn-primary hero-cta">
+              Book Your Decoration Service Today
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Services Section */}
-      <section style={{ padding: '4rem 2rem' }}>
-        <h2>Featured Services</h2>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '2rem',
-          marginTop: '2rem'
-        }}>
-          {featuredServices.map((service) => (
-            <div key={service._id} style={{ 
-              border: '1px solid #ccc', 
-              padding: '1rem',
-              borderRadius: '8px'
-            }}>
-              {service.image && (
-                <img 
-                  src={service.image} 
-                  alt={service.service_name}
-                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                />
-              )}
-              <h3>{service.service_name}</h3>
-              <p>{service.description}</p>
-              <p>${service.cost} {service.unit}</p>
-              <Link to={`/service/${service._id}`}>
-                <button>View Details</button>
+      <section className="section">
+        <div className="container">
+          <h2 className="section-title">Featured Services</h2>
+          <div className="services-grid">
+            {featuredServices.map((service) => (
+              <div key={service._id} className="service-card">
+                {service.image && (
+                  <div className="service-card-image">
+                    <img 
+                      src={service.image} 
+                      alt={service.service_name}
+                    />
+                  </div>
+                )}
+                <div className="service-card-content">
+                  <h3 className="service-card-title">{service.service_name}</h3>
+                  <p className="service-card-description">{service.description}</p>
+                  <div className="service-card-price">
+                    ${service.cost} <span>{service.unit}</span>
+                  </div>
+                  <Link to={`/service/${service._id}`} className="btn-outline service-card-btn">
+                    View Details
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+          {featuredServices.length > 0 && (
+            <div className="text-center" style={{ marginTop: '3rem' }}>
+              <Link to="/services" className="btn-primary">
+                View All Services
               </Link>
             </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <Link to="/services">
-            <button>View All Services</button>
-          </Link>
+          )}
         </div>
       </section>
 
       {/* Top Decorators Section */}
-      <section style={{ padding: '4rem 2rem', background: '#f5f5f5' }}>
-        <h2>Top Decorators</h2>
-        <p>Coming soon - Featured decorators will be displayed here</p>
+      <section className="section section-alt">
+        <div className="container">
+          <h2 className="section-title">Top Decorators</h2>
+          <p className="section-subtitle">
+            Coming soon - Featured decorators will be displayed here
+          </p>
+        </div>
       </section>
     </div>
   );
 };
 
 export default HomePage;
-

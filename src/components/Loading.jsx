@@ -1,12 +1,10 @@
+import '../styles/components.css';
+
 const Loading = () => {
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh' 
-    }}>
-      <div>Loading...</div>
+    <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <p className="loading-text">Loading...</p>
     </div>
   );
 };

@@ -31,17 +31,10 @@ const AuthErrorBanner = () => {
   if (!showError) return null;
 
   return (
-    <div style={{
-      background: '#fff3cd',
-      border: '1px solid #ffc107',
-      padding: '1rem',
-      margin: '1rem',
-      borderRadius: '8px',
-      color: '#856404'
-    }}>
-      <h3 style={{ marginTop: 0 }}>⚠️ Firebase Authentication Not Configured</h3>
+    <div className="auth-error-banner">
+      <h3>⚠️ Firebase Authentication Not Configured</h3>
       <p><strong>The error "CONFIGURATION_NOT_FOUND" means Authentication is not enabled in your Firebase project.</strong></p>
-      <ol style={{ marginLeft: '1.5rem' }}>
+      <ol>
         <li>Go to <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer">Firebase Console</a></li>
         <li>Select your project: <strong>style-decor-47d8f</strong></li>
         <li>Click <strong>Authentication</strong> in the left menu</li>
