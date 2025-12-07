@@ -16,6 +16,21 @@ const Navbar = () => {
     setShowMobileMenu(false);
   };
 
+  // Get the correct dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!userProfile) return '/dashboard'; // Default to user dashboard if profile not loaded
+    if (userProfile.role === 'admin') return '/admin';
+    if (userProfile.role === 'decorator') return '/decorator';
+    return '/dashboard'; // Default to user dashboard
+  };
+
+  const handleDashboardClick = (e) => {
+    e.preventDefault();
+    navigate(getDashboardRoute());
+    setShowDropdown(false);
+    setShowMobileMenu(false);
+  };
+
   return (
     <nav className="navbar">
       {/* Logo & Brand Name */}
@@ -43,9 +58,12 @@ const Navbar = () => {
       <div className="navbar-actions">
         {user ? (
           <>
-            <Link to="/dashboard" className="navbar-dashboard-btn">
+            <button 
+              onClick={handleDashboardClick}
+              className="navbar-dashboard-btn"
+            >
               Dashboard
-            </Link>
+            </button>
             <div className="navbar-dropdown">
               <button
                 className="navbar-profile-btn"
@@ -74,31 +92,12 @@ const Navbar = () => {
                         Role: {userProfile?.role || 'Not loaded'}
                       </div>
                     </div>
-                    {userProfile?.role === 'admin' && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setShowDropdown(false)}
-                        className="dropdown-item"
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                    {userProfile?.role === 'decorator' && (
-                      <Link
-                        to="/decorator"
-                        onClick={() => setShowDropdown(false)}
-                        className="dropdown-item"
-                      >
-                        Decorator Dashboard
-                      </Link>
-                    )}
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setShowDropdown(false)}
+                    <button
+                      onClick={handleDashboardClick}
                       className="dropdown-item"
                     >
-                      My Dashboard
-                    </Link>
+                      Dashboard
+                    </button>
                     <button
                       onClick={handleSignOut}
                       className="dropdown-item dropdown-item-danger"
@@ -198,13 +197,19 @@ const Navbar = () => {
             </Link>
             {user ? (
               <>
-                <Link
-                  to="/dashboard"
+                <button
+                  onClick={handleDashboardClick}
                   className="mobile-menu-link"
-                  onClick={() => setShowMobileMenu(false)}
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    width: '100%', 
+                    textAlign: 'left',
+                    cursor: 'pointer'
+                  }}
                 >
                   Dashboard
-                </Link>
+                </button>
                 <div className="mobile-menu-user">
                   <div className="mobile-menu-user-info">
                     <div className="mobile-menu-user-name">

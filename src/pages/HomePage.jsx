@@ -22,10 +22,31 @@ const HomePage = () => {
         // Fetch top decorators (if endpoint exists)
         try {
           const decoratorsResponse = await getTopDecorators();
-          setTopDecorators(decoratorsResponse.data?.slice(0, 4) || []);
+          console.log('Decorators response:', decoratorsResponse);
+          
+          // Handle different response formats
+          let decorators = [];
+          if (Array.isArray(decoratorsResponse)) {
+            decorators = decoratorsResponse;
+          } else if (decoratorsResponse?.data) {
+            decorators = Array.isArray(decoratorsResponse.data) ? decoratorsResponse.data : [];
+          } else if (decoratorsResponse?.success && decoratorsResponse?.data) {
+            decorators = Array.isArray(decoratorsResponse.data) ? decoratorsResponse.data : [];
+          }
+          
+          console.log('Extracted decorators:', decorators);
+          
+          // Sort by rating (descending) and get top 3
+          decorators = decorators
+            .filter(d => d.status === 'approved') // Only show approved decorators
+            .sort((a, b) => (b.rating || 0) - (a.rating || 0)) // Sort by rating descending
+            .slice(0, 3); // Get top 3
+          
+          console.log('Top 3 decorators:', decorators);
+          setTopDecorators(decorators);
         } catch (error) {
-          console.log('Decorators endpoint not available yet');
-          // Use placeholder data structure
+          console.error('Error fetching top decorators:', error);
+          // Use empty array if endpoint doesn't exist
           setTopDecorators([]);
         }
       } catch (error) {

@@ -152,14 +152,50 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
   return response.json();
 };
 
-// Public endpoints
-export const getServices = (category = null) => {
-  const query = category ? `?category=${category}` : '';
-  return apiRequest(`/services${query}`);
+// Public endpoints (no authentication required)
+export const getServices = async (category = null) => {
+  try {
+    const query = category ? `?category=${category}` : '';
+    // Make a direct fetch call without authentication for public endpoint
+    const response = await fetch(`${API_BASE_URL}/api/services${query}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    throw error;
+  }
 };
 
-export const getServiceById = (id) => {
-  return apiRequest(`/services/${id}`);
+export const getServiceById = async (id) => {
+  try {
+    // Make a direct fetch call without authentication for public endpoint
+    const response = await fetch(`${API_BASE_URL}/api/services/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    throw error;
+  }
 };
 
 // User registration/profile creation
@@ -378,15 +414,27 @@ export const getAllUsers = async () => {
   }
 };
 
-// Public decorator endpoints (if available)
-// Note: This endpoint might not exist - placeholder for future implementation
+// Public decorator endpoints
+// GET /api/decorators/top - Get top decorators by rating (public endpoint, no auth required)
 export const getTopDecorators = async () => {
   try {
-    // Try public endpoint first
-    return await apiRequest('/decorators/top');
+    // Make a direct fetch call without authentication for public endpoint
+    const response = await fetch(`${API_BASE_URL}/api/decorators/top`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    // If endpoint doesn't exist, return empty array
-    console.warn('Top decorators endpoint not available:', error.message);
+    console.error('Error fetching top decorators:', error);
     return { data: [] };
   }
 };
