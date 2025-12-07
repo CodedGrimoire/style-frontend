@@ -30,7 +30,14 @@ const apiRequest = async (endpoint, options = {}) => {
   
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'API request failed' }));
-    throw new Error(error.message || 'API request failed');
+    const errorMessage = error.message || 'API request failed';
+    
+    // Handle "User not found" error - this means the backend needs user profile creation
+    if (errorMessage.includes('User not found') || errorMessage.includes('profile registration')) {
+      throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage);
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -44,6 +51,22 @@ export const getServices = (category = null) => {
 
 export const getServiceById = (id) => {
   return apiRequest(`/services/${id}`);
+};
+
+// User registration/profile creation
+// Note: This endpoint might not exist - the backend may auto-create users
+// This is a placeholder in case the backend needs explicit registration
+export const registerUser = async (userData) => {
+  try {
+    return await apiRequest('/users/register', {
+      method: 'POST',
+      body: userData,
+    });
+  } catch (error) {
+    // If endpoint doesn't exist, that's okay - backend might auto-create
+    console.warn('User registration endpoint not available:', error.message);
+    return null;
+  }
 };
 
 // User endpoints

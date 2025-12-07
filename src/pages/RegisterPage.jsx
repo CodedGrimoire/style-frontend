@@ -8,6 +8,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +29,7 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await signUp(email, password);
+      await signUp(email, password, name || null);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Failed to create account');
@@ -81,6 +82,17 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label>Name (optional):</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+            />
+          </div>
+
           <div>
             <label>Email:</label>
             <input

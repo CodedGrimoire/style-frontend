@@ -6,7 +6,17 @@ import { useAuth } from '../context/AuthContext';
 import { createPaymentIntent, confirmPayment } from '../services/api';
 import Loading from '../components/Loading';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_your_key');
+// Only initialize Stripe if we have a valid publishable key
+const getStripeKey = () => {
+  const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  if (!key || key.startsWith('sk_')) {
+    console.warn('Invalid or missing Stripe publishable key. Please set VITE_STRIPE_PUBLISHABLE_KEY in .env with a key starting with pk_test_ or pk_live_');
+    return null;
+  }
+  return key;
+};
+
+const stripePromise = getStripeKey() ? loadStripe(getStripeKey()) : null;
 
 const PaymentForm = ({ booking, onSuccess }) => {
   const stripe = useStripe();
@@ -128,9 +138,20 @@ const PaymentPage = () => {
         <p><strong>Location:</strong> {booking.location}</p>
       </div>
 
-      <Elements stripe={stripePromise}>
-        <PaymentForm booking={booking} onSuccess={handleSuccess} />
-      </Elements>
+      {stripePromise ? (
+        <Elements stripe={stripePromise}>
+          <PaymentForm booking={booking} onSuccess={handleSuccess} />
+        </Elements>
+      ) : (
+        <div style={{ padding: '2rem', border: '1px solid #ff6b6b', borderRadius: '8px', background: '#ffe6e6' }}>
+          <h3>Stripe Configuration Error</h3>
+          <p>Please set a valid Stripe publishable key in your .env file:</p>
+          <code>VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here</code>
+          <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+            Note: Use a PUBLISHABLE key (starts with pk_test_ or pk_live_), not a SECRET key (sk_).
+          </p>
+        </div>
+      )}
     </div>
   );
 };

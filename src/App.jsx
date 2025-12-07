@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Loading from './components/Loading';
 import Error from './components/Error';
+import AuthErrorBanner from './components/AuthErrorBanner';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -25,6 +26,7 @@ function App() {
       <Router>
         <div>
           <Navbar />
+          <AuthErrorBanner />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
