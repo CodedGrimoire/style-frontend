@@ -37,18 +37,39 @@ export const AuthProvider = ({ children }) => {
         // If user is logged in, try to ensure their profile exists in backend
         if (currentUser) {
           try {
+            // Wait for token to be ready
+            await currentUser.getIdToken(true); // Force refresh to ensure token is ready
+            
             // Try to register user profile if it doesn't exist
-            // This will fail silently if profile already exists or endpoint doesn't exist
-            await registerUser({
-              email: currentUser.email,
-              name: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
-              firebaseUid: currentUser.uid,
-              image: currentUser.photoURL || null,
-            });
+            // The endpoint is idempotent - returns existing user if already registered
+            let userName = currentUser.displayName || currentUser.email?.split('@')[0];
+            
+            // If we still don't have a name, use a more descriptive default
+            if (!userName || userName.trim().length === 0) {
+              userName = currentUser.email?.split('@')[0] || 'User';
+            }
+            
+            // Ensure name is not just whitespace
+            userName = userName.trim();
+            
+            if (userName.length === 0) {
+              console.warn('Cannot register user: name is empty');
+              return;
+            }
+            
+            await registerUser(
+              userName,
+              'user', // Default role
+              currentUser.photoURL || null
+            );
+            console.log('User profile registered successfully');
           } catch (error) {
-            // Profile might already exist or endpoint might not be available
-            // This is not critical - backend should auto-create on first API call
-            console.log('User profile check:', error.message);
+            // Log the error for debugging
+            console.error('User profile registration error:', error.message);
+            
+            // If it's a critical error (like missing name), we should handle it
+            // But for now, we'll let it fail and handle it when user makes an API call
+            // The USER_PROFILE_REQUIRED error will be caught by apiRequest which will auto-retry
           }
         }
         
@@ -78,7 +99,42 @@ export const AuthProvider = ({ children }) => {
       throw new Error('Firebase Authentication is not configured. Please enable Authentication in Firebase Console.');
     }
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Wait for token to be ready
+      await user.getIdToken(true);
+      
+      // Try to register/update user profile in backend
+      // The endpoint is idempotent - returns existing user if already registered
+      try {
+        let userName = user.displayName || user.email.split('@')[0];
+        
+        // If we still don't have a name, use email prefix
+        if (!userName || userName.trim().length === 0) {
+          userName = user.email.split('@')[0];
+        }
+        
+        // Ensure name is not just whitespace
+        userName = userName.trim();
+        
+        if (userName.length > 0) {
+          const profile = await registerUser(
+            userName,
+            'user', // Default role
+            user.photoURL || null
+          );
+          console.log('User profile registered/updated successfully:', profile);
+        } else {
+          console.warn('Cannot register user: name is empty');
+        }
+      } catch (regError) {
+        // If registration fails, log it but don't fail the signin
+        // The auto-registration in apiRequest will handle it
+        console.error('User profile registration failed:', regError.message);
+      }
+      
+      return userCredential;
     } catch (error) {
       if (error.code === 'auth/configuration-not-found') {
         throw new Error('Firebase Authentication is not enabled. Please enable it in Firebase Console under Authentication > Sign-in method.');
@@ -95,18 +151,31 @@ export const AuthProvider = ({ children }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
+      // Wait for token to be ready
+      await user.getIdToken(true);
+      
       // Try to create user profile in backend
-      // The backend should auto-create, but we'll try explicit registration if available
+      // The endpoint is idempotent - returns existing user if already registered
       try {
-        await registerUser({
-          email: user.email,
-          name: name || user.displayName || user.email.split('@')[0],
-          firebaseUid: user.uid,
-          image: user.photoURL || null,
-        });
+        const userName = name || user.displayName || user.email.split('@')[0];
+        if (!userName || userName.trim().length === 0) {
+          throw new Error('Name is required for registration');
+        }
+        
+        const profile = await registerUser(
+          userName.trim(),
+          'user', // Default role
+          user.photoURL || null
+        );
+        console.log('User profile created successfully:', profile);
       } catch (regError) {
-        // Backend might auto-create on first API call, so this is not critical
-        console.log('User profile will be created on first API call');
+        // If registration fails, log it but don't fail the signup
+        // The auto-registration in apiRequest will handle it
+        console.error('User profile registration failed:', regError.message);
+        if (regError.message.includes('Name is required')) {
+          // If name is missing, we should still allow signup but warn the user
+          console.warn('User signed up but profile registration failed due to missing name');
+        }
       }
       
       return userCredential;
@@ -126,17 +195,27 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       
+      // Wait for token to be ready
+      await user.getIdToken(true);
+      
       // Try to create/update user profile in backend
+      // The endpoint is idempotent - returns existing user if already registered
       try {
-        await registerUser({
-          email: user.email,
-          name: user.displayName || user.email.split('@')[0],
-          firebaseUid: user.uid,
-          image: user.photoURL || null,
-        });
+        const userName = user.displayName || user.email.split('@')[0];
+        if (!userName || userName.trim().length === 0) {
+          throw new Error('Name is required for registration');
+        }
+        
+        const profile = await registerUser(
+          userName.trim(),
+          'user', // Default role
+          user.photoURL || null
+        );
+        console.log('User profile created/updated successfully:', profile);
       } catch (regError) {
-        // Backend might auto-create on first API call, so this is not critical
-        console.log('User profile will be created on first API call');
+        // If registration fails, log it but don't fail the signin
+        // The auto-registration in apiRequest will handle it
+        console.error('User profile registration failed:', regError.message);
       }
       
       return result;

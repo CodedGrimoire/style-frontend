@@ -26,6 +26,11 @@ const RegisterPage = () => {
       return;
     }
 
+    if (!name || name.trim().length === 0) {
+      setError('Name is required');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -83,12 +88,13 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label>Name (optional):</label>
+            <label>Name (required):</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
+              placeholder="Your full name"
+              required
               style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
             />
           </div>

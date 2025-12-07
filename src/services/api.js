@@ -48,7 +48,79 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
     
     // Handle "User not found" error - this means the backend needs user profile creation
     if (errorMessage.includes('User not found') || errorMessage.includes('profile registration')) {
-      throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage);
+      // Check if we can auto-register (only if this isn't already a registration request and we haven't retried too many times)
+      if (!endpoint.includes('/register') && auth.currentUser && retryCount < 2) {
+        const currentUser = auth.currentUser;
+        try {
+          console.log('User profile not found, attempting automatic registration...');
+          console.log('User email:', currentUser.email);
+          console.log('User displayName:', currentUser.displayName);
+          
+          // Get a fresh token
+          const token = await currentUser.getIdToken(true);
+          if (!token) {
+            throw new Error('Failed to get authentication token');
+          }
+          
+          // Get user name - prefer displayName, fallback to email prefix, but ensure it's valid
+          let userName = currentUser.displayName;
+          if (!userName || userName.trim().length === 0) {
+            userName = currentUser.email?.split('@')[0];
+          }
+          // If still no valid name, use email prefix (should always exist)
+          if (!userName || userName.trim().length === 0) {
+            userName = currentUser.email?.split('@')[0] || 'User';
+          }
+          userName = userName.trim();
+          
+          console.log('Registering with name:', userName);
+          
+          // Make a direct registration request to avoid circular dependency
+          const regResponse = await fetch(`${API_BASE_URL}/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              name: userName,
+              role: 'user',
+              image: currentUser.photoURL || null,
+            }),
+          });
+          
+          console.log('Registration response status:', regResponse.status);
+          
+          if (regResponse.ok) {
+            const regData = await regResponse.json();
+            console.log('Automatic registration successful:', regData);
+            // Retry the original request after registration (increment retry count to prevent infinite loops)
+            return apiRequest(endpoint, options, retryCount + 1);
+          } else {
+            const regErrorText = await regResponse.text();
+            let regError;
+            try {
+              regError = JSON.parse(regErrorText);
+            } catch {
+              regError = { message: regErrorText || 'Registration failed' };
+            }
+            console.error('Automatic registration failed:', regError);
+            console.error('Response status:', regResponse.status);
+            console.error('Response body:', regErrorText);
+            throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage + '. Registration failed: ' + (regError.message || 'Unknown error'));
+          }
+        } catch (regError) {
+          console.error('Automatic registration error:', regError);
+          console.error('Error details:', {
+            message: regError.message,
+            stack: regError.stack,
+            name: regError.name
+          });
+          throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage + '. Please complete your profile registration. Error: ' + regError.message);
+        }
+      } else {
+        throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage);
+      }
     }
     
     // Handle authentication errors
@@ -73,18 +145,39 @@ export const getServiceById = (id) => {
 };
 
 // User registration/profile creation
-// Note: This endpoint might not exist - the backend may auto-create users
-// This is a placeholder in case the backend needs explicit registration
-export const registerUser = async (userData) => {
+// POST /register - Creates user profile in backend after Firebase authentication
+// Request body: { name (required), role (optional, defaults to 'user'), image (optional) }
+// Email and firebaseUid are extracted from the JWT token
+// Returns 201 Created for new users, 200 OK for existing users (idempotent)
+export const registerUser = async (name, role = 'user', image = null) => {
   try {
-    return await apiRequest('/users/register', {
+    if (!name || name.trim().length === 0) {
+      throw new Error('Name is required.');
+    }
+
+    const response = await apiRequest('/register', {
       method: 'POST',
-      body: userData,
+      body: {
+        name: name.trim(),
+        role,
+        image,
+      },
     });
+    
+    // The endpoint returns 200 OK if user already exists (idempotent)
+    // or 201 Created for new users - both are success cases
+    // Response format: { success: true, message: "...", data: {...} }
+    return response.data || response;
   } catch (error) {
-    // If endpoint doesn't exist, that's okay - backend might auto-create
-    console.warn('User registration endpoint not available:', error.message);
-    return null;
+    // Re-throw specific errors (like "Name is required" or "Email already registered")
+    if (error.message.includes('Name is required') || 
+        error.message.includes('already registered') ||
+        error.message.includes('Invalid or expired token')) {
+      throw error;
+    }
+    // For other errors, log and re-throw
+    console.warn('User registration error:', error.message);
+    throw error;
   }
 };
 
