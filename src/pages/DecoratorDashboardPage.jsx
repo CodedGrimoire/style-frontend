@@ -93,16 +93,24 @@ const DecoratorDashboardPage = () => {
   const getStatusSteps = (currentStatus) => {
     const steps = [
       { value: 'assigned', label: 'Assigned' },
-      { value: 'in-progress', label: 'In Progress' },
+      { value: 'planning', label: 'Planning Phase' },
+      { value: 'materials-prepared', label: 'Materials Prepared' },
+      { value: 'on-the-way', label: 'On the Way to Venue' },
+      { value: 'setup-in-progress', label: 'Setup in Progress' },
       { value: 'completed', label: 'Completed' },
     ];
     return steps;
   };
 
   const getNextStatus = (currentStatus) => {
-    if (currentStatus === 'assigned') return 'in-progress';
-    if (currentStatus === 'in-progress') return 'completed';
-    return null;
+    const statusFlow = {
+      'assigned': 'planning',
+      'planning': 'materials-prepared',
+      'materials-prepared': 'on-the-way',
+      'on-the-way': 'setup-in-progress',
+      'setup-in-progress': 'completed',
+    };
+    return statusFlow[currentStatus] || null;
   };
 
   if (loading) return <Loading />;
@@ -223,9 +231,10 @@ const DecoratorDashboardPage = () => {
                     <div className="status-steps">
                       {getStatusSteps(project.status).map((step, index) => {
                         const isActive = step.value === project.status;
-                        const isCompleted = 
-                          (step.value === 'assigned' && ['in-progress', 'completed'].includes(project.status)) ||
-                          (step.value === 'in-progress' && project.status === 'completed');
+                        const statusOrder = ['assigned', 'planning', 'materials-prepared', 'on-the-way', 'setup-in-progress', 'completed'];
+                        const currentIndex = statusOrder.indexOf(project.status);
+                        const stepIndex = statusOrder.indexOf(step.value);
+                        const isCompleted = stepIndex < currentIndex || (stepIndex === currentIndex && project.status === 'completed');
                         return (
                           <div
                             key={step.value}

@@ -80,7 +80,7 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="user">
                   <UserDashboardPage />
                 </ProtectedRoute>
               }
@@ -88,7 +88,7 @@ function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="admin">
                   <AdminDashboardPage />
                 </ProtectedRoute>
               }
@@ -96,7 +96,7 @@ function App() {
             <Route
               path="/decorator"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="decorator">
                   <DecoratorDashboardPage />
                 </ProtectedRoute>
               }

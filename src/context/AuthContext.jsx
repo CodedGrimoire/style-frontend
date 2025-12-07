@@ -21,6 +21,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null); // Backend user profile with role
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,19 +58,26 @@ export const AuthProvider = ({ children }) => {
               return;
             }
             
-            await registerUser(
+            const profile = await registerUser(
               userName,
               'user', // Default role
               currentUser.photoURL || null
             );
-            console.log('User profile registered successfully');
+            console.log('User profile registered successfully:', profile);
+            // Store the user profile (includes role) for role-based routing
+            setUserProfile(profile);
           } catch (error) {
-            // Log the error for debugging
-            console.error('User profile registration error:', error.message);
+            // Log the error for debugging with full details
+            console.error('User profile registration error:', error);
+            console.error('Error details:', {
+              message: error.message,
+              stack: error.stack,
+              name: error.name
+            });
             
-            // If it's a critical error (like missing name), we should handle it
-            // But for now, we'll let it fail and handle it when user makes an API call
-            // The USER_PROFILE_REQUIRED error will be caught by apiRequest which will auto-retry
+            // If it's a critical error, log it but don't block the app
+            // The auto-registration in apiRequest will try again when needed
+            // But we should at least know what went wrong
           }
         }
         
@@ -125,6 +133,7 @@ export const AuthProvider = ({ children }) => {
             user.photoURL || null
           );
           console.log('User profile registered/updated successfully:', profile);
+          setUserProfile(profile);
         } else {
           console.warn('Cannot register user: name is empty');
         }
@@ -168,6 +177,7 @@ export const AuthProvider = ({ children }) => {
           user.photoURL || null
         );
         console.log('User profile created successfully:', profile);
+        setUserProfile(profile);
       } catch (regError) {
         // If registration fails, log it but don't fail the signup
         // The auto-registration in apiRequest will handle it
@@ -212,6 +222,7 @@ export const AuthProvider = ({ children }) => {
           user.photoURL || null
         );
         console.log('User profile created/updated successfully:', profile);
+        setUserProfile(profile);
       } catch (regError) {
         // If registration fails, log it but don't fail the signin
         // The auto-registration in apiRequest will handle it
@@ -235,7 +246,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = {
-    user,
+    user, // Firebase user
+    userProfile, // Backend user profile with role
     loading,
     signIn,
     signUp,
