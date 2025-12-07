@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/navbar.css';
 
 const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -65,7 +65,33 @@ const Navbar = () => {
                     <div className="dropdown-header">
                       <div className="dropdown-name">{user.displayName || 'User'}</div>
                       <div className="dropdown-email">{user.email}</div>
+                      <div className="dropdown-role" style={{ 
+                        marginTop: '0.5rem', 
+                        fontSize: '0.85rem', 
+                        color: '#666',
+                        fontWeight: 'bold'
+                      }}>
+                        Role: {userProfile?.role || 'Not loaded'}
+                      </div>
                     </div>
+                    {userProfile?.role === 'admin' && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setShowDropdown(false)}
+                        className="dropdown-item"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    {userProfile?.role === 'decorator' && (
+                      <Link
+                        to="/decorator"
+                        onClick={() => setShowDropdown(false)}
+                        className="dropdown-item"
+                      >
+                        Decorator Dashboard
+                      </Link>
+                    )}
                     <Link
                       to="/dashboard"
                       onClick={() => setShowDropdown(false)}

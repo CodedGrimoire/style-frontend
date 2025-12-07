@@ -58,14 +58,18 @@ export const AuthProvider = ({ children }) => {
               return;
             }
             
+            // Call registerUser - it's idempotent, so if user exists, it returns existing profile with actual role
+            // We pass 'user' as default, but backend will return existing user's actual role if they're already registered
             const profile = await registerUser(
               userName,
-              'user', // Default role
+              'user', // Default role for new users only
               currentUser.photoURL || null
             );
-            console.log('User profile registered successfully:', profile);
             // Store the user profile (includes role) for role-based routing
-            setUserProfile(profile);
+            // The profile should contain the actual role from backend (admin, decorator, or user)
+            if (profile) {
+              setUserProfile(profile);
+            }
           } catch (error) {
             // Log the error for debugging with full details
             console.error('User profile registration error:', error);

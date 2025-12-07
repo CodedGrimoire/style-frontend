@@ -24,7 +24,7 @@ import 'animate.css';
 const ITEMS_PER_PAGE = 5;
 
 const AdminDashboardPage = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);

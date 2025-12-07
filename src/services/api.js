@@ -211,7 +211,6 @@ export const registerUser = async (name, role = 'user', image = null) => {
     }
 
     const data = await response.json();
-    console.log('Registration successful:', data);
     
     // The endpoint returns 200 OK if user already exists (idempotent)
     // or 201 Created for new users - both are success cases

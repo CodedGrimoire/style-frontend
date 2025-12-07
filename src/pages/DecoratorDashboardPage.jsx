@@ -257,7 +257,11 @@ const DecoratorDashboardPage = () => {
                         className="btn-primary"
                         onClick={() => handleStatusUpdate(project._id, getNextStatus(project.status))}
                       >
-                        {project.status === 'assigned' ? 'Start Project' : 'Mark as Completed'}
+                        {project.status === 'assigned' ? 'Start Planning' : 
+                       project.status === 'planning' ? 'Materials Prepared' :
+                       project.status === 'materials-prepared' ? 'On the Way' :
+                       project.status === 'on-the-way' ? 'Start Setup' :
+                       project.status === 'setup-in-progress' ? 'Mark as Completed' : 'Next Step'}
                       </button>
                     )}
                     {project.status === 'completed' && (
