@@ -200,6 +200,16 @@ export const getServiceDemandAnalytics = () => {
   return apiRequest('/admin/analytics/service-demand');
 };
 
+// Get all decorators (admin only)
+export const getAllDecorators = () => {
+  return apiRequest('/admin/decorators');
+};
+
+// Get all users (admin only)
+export const getAllUsers = () => {
+  return apiRequest('/admin/users');
+};
+
 // Public decorator endpoints (if available)
 // Note: This endpoint might not exist - placeholder for future implementation
 export const getTopDecorators = async () => {
