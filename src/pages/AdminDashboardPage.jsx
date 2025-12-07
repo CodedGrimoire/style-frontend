@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -17,8 +17,11 @@ import {
   disableDecorator,
 } from '../services/api';
 import Loading from '../components/Loading';
+import toast from 'react-hot-toast';
 import '../styles/dashboard.css';
 import 'animate.css';
+
+const ITEMS_PER_PAGE = 5;
 
 const AdminDashboardPage = () => {
   const { user } = useAuth();
@@ -43,6 +46,12 @@ const AdminDashboardPage = () => {
   const [selectedDecoratorId, setSelectedDecoratorId] = useState('');
   const [selectedUserId, setSelectedUserId] = useState('');
   const [decoratorSpecialties, setDecoratorSpecialties] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date'); // 'date' or 'status'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
+  const [currentPage, setCurrentPage] = useState(1);
+  const [serviceSearchTerm, setServiceSearchTerm] = useState('');
+  const [decoratorSearchTerm, setDecoratorSearchTerm] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -58,9 +67,11 @@ const AdminDashboardPage = () => {
       if (activeTab === 'bookings') {
         const response = await getAllBookings();
         setBookings(response.data || []);
+        toast.success('Bookings loaded successfully');
       } else if (activeTab === 'services') {
         const response = await getServices();
         setServices(response.data || []);
+        toast.success('Services loaded successfully');
       } else if (activeTab === 'decorators') {
         try {
           const [decoratorsRes, usersRes] = await Promise.all([
@@ -69,11 +80,13 @@ const AdminDashboardPage = () => {
           ]);
           setDecorators(decoratorsRes.data || []);
           setUsers(usersRes.data || []);
+          toast.success('Decorators and users loaded successfully');
         } catch (err) {
           console.error('Error loading decorators/users:', err);
           // If endpoints don't exist, set empty arrays
           setDecorators([]);
           setUsers([]);
+          toast.error('Failed to load decorators/users');
         }
       } else if (activeTab === 'analytics') {
         const [revenue, demand] = await Promise.all([
@@ -81,9 +94,11 @@ const AdminDashboardPage = () => {
           getServiceDemandAnalytics(),
         ]);
         setAnalytics({ revenue: revenue.data, demand: demand.data });
+        toast.success('Analytics loaded successfully');
       }
     } catch (err) {
       console.error('Error loading data:', err);
+      toast.error(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -106,9 +121,9 @@ const AdminDashboardPage = () => {
         image: '',
       });
       loadData();
-      alert('Service created successfully');
+      toast.success('Service created successfully');
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to create service');
     }
   };
 
@@ -129,9 +144,9 @@ const AdminDashboardPage = () => {
         image: '',
       });
       loadData();
-      alert('Service updated successfully');
+      toast.success('Service updated successfully');
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to update service');
     }
   };
 
@@ -140,57 +155,61 @@ const AdminDashboardPage = () => {
       return;
     }
     try {
+      const loadingToast = toast.loading('Deleting service...');
       await deleteService(id);
       loadData();
-      alert('Service deleted successfully');
+      toast.success('Service deleted successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to delete service');
     }
   };
 
   const handleAssignDecorator = async (bookingId) => {
     if (!selectedDecoratorId) {
-      alert('Please select a decorator');
+      toast.error('Please select a decorator');
       return;
     }
+    const loadingToast = toast.loading('Assigning decorator...');
     try {
       await assignDecorator(bookingId, selectedDecoratorId);
       setSelectedBooking(null);
       setSelectedDecoratorId('');
       loadData();
-      alert('Decorator assigned successfully');
+      toast.success('Decorator assigned successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to assign decorator', { id: loadingToast });
     }
   };
 
   const handleMakeDecorator = async () => {
     if (!selectedUserId) {
-      alert('Please select a user');
+      toast.error('Please select a user');
       return;
     }
     if (decoratorSpecialties.length === 0) {
-      alert('Please add at least one specialty');
+      toast.error('Please add at least one specialty');
       return;
     }
+    const loadingToast = toast.loading('Converting user to decorator...');
     try {
       await makeUserDecorator(selectedUserId, decoratorSpecialties);
       setSelectedUserId('');
       setDecoratorSpecialties([]);
       loadData();
-      alert('User converted to decorator successfully');
+      toast.success('User converted to decorator successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to convert user', { id: loadingToast });
     }
   };
 
   const handleApproveDecorator = async (decoratorId) => {
+    const loadingToast = toast.loading('Approving decorator...');
     try {
       await approveDecorator(decoratorId);
       loadData();
-      alert('Decorator approved successfully');
+      toast.success('Decorator approved successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to approve decorator', { id: loadingToast });
     }
   };
 
@@ -198,14 +217,77 @@ const AdminDashboardPage = () => {
     if (!window.confirm('Are you sure you want to disable this decorator?')) {
       return;
     }
+    const loadingToast = toast.loading('Disabling decorator...');
     try {
       await disableDecorator(decoratorId);
       loadData();
-      alert('Decorator disabled successfully');
+      toast.success('Decorator disabled successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast.error(err.message || 'Failed to disable decorator', { id: loadingToast });
     }
   };
+
+  // Filter and sort bookings
+  const filteredAndSortedBookings = useMemo(() => {
+    let filtered = [...bookings];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(booking =>
+        booking.serviceId?.service_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.userId?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.status?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === 'date') {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      } else if (sortBy === 'status') {
+        const statusA = a.status || '';
+        const statusB = b.status || '';
+        if (sortOrder === 'asc') {
+          return statusA.localeCompare(statusB);
+        } else {
+          return statusB.localeCompare(statusA);
+        }
+      }
+      return 0;
+    });
+
+    return filtered;
+  }, [bookings, searchTerm, sortBy, sortOrder]);
+
+  // Pagination for bookings
+  const totalPages = Math.ceil(filteredAndSortedBookings.length / ITEMS_PER_PAGE);
+  const paginatedBookings = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSortedBookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedBookings, currentPage]);
+
+  // Filter services
+  const filteredServices = useMemo(() => {
+    if (!serviceSearchTerm) return services;
+    return services.filter(service =>
+      service.service_name?.toLowerCase().includes(serviceSearchTerm.toLowerCase()) ||
+      service.category?.toLowerCase().includes(serviceSearchTerm.toLowerCase()) ||
+      service.description?.toLowerCase().includes(serviceSearchTerm.toLowerCase())
+    );
+  }, [services, serviceSearchTerm]);
+
+  // Filter decorators
+  const filteredDecorators = useMemo(() => {
+    if (!decoratorSearchTerm) return decorators;
+    return decorators.filter(decorator =>
+      decorator.userId?.name?.toLowerCase().includes(decoratorSearchTerm.toLowerCase()) ||
+      decorator.userId?.email?.toLowerCase().includes(decoratorSearchTerm.toLowerCase()) ||
+      decorator.specialties?.some(s => s.toLowerCase().includes(decoratorSearchTerm.toLowerCase()))
+    );
+  }, [decorators, decoratorSearchTerm]);
 
   const getServiceDemandChart = () => {
     if (!analytics?.demand?.serviceDemand) return null;
@@ -283,13 +365,63 @@ const AdminDashboardPage = () => {
         {activeTab === 'bookings' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
             <h2 className="section-heading">All Bookings</h2>
+            
+            {/* Search and Sort Controls */}
+            {bookings.length > 0 && (
+              <div className="bookings-controls">
+                <div className="search-container">
+                  <input
+                    type="text"
+                    placeholder="Search by service, user, location, or status..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="form-input search-input"
+                  />
+                </div>
+                <div className="sort-container">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => {
+                      setSortBy(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="form-select"
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="status">Sort by Status</option>
+                  </select>
+                  <button
+                    className="btn-outline sort-order-btn"
+                    onClick={() => {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      setCurrentPage(1);
+                    }}
+                    title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                  >
+                    {sortOrder === 'asc' ? '↑' : '↓'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {bookings.length === 0 ? (
               <div className="empty-state">
                 <p>No bookings found.</p>
               </div>
+            ) : filteredAndSortedBookings.length === 0 ? (
+              <div className="empty-state">
+                <p>No bookings match your search criteria.</p>
+                <button className="btn-outline" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
+              </div>
             ) : (
-              <div className="bookings-grid">
-                {bookings.map((booking) => (
+              <>
+                <div className="bookings-grid">
+                  {paginatedBookings.map((booking) => (
                   <div key={booking._id} className="booking-card">
                     <div className="booking-header">
                       <h3 className="booking-service-name">
@@ -379,8 +511,32 @@ const AdminDashboardPage = () => {
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="btn-outline"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </button>
+                    <span className="pagination-info">
+                      Page {currentPage} of {totalPages} ({filteredAndSortedBookings.length} bookings)
+                    </span>
+                    <button
+                      className="btn-outline"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -506,13 +662,34 @@ const AdminDashboardPage = () => {
             </form>
 
             <h3 className="section-subheading">Existing Services</h3>
+            
+            {/* Search Services */}
+            {services.length > 0 && (
+              <div className="search-container" style={{ marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Search services by name, category, or description..."
+                  value={serviceSearchTerm}
+                  onChange={(e) => setServiceSearchTerm(e.target.value)}
+                  className="form-input search-input"
+                />
+              </div>
+            )}
+
             {services.length === 0 ? (
               <div className="empty-state">
                 <p>No services found.</p>
               </div>
+            ) : filteredServices.length === 0 ? (
+              <div className="empty-state">
+                <p>No services match your search criteria.</p>
+                <button className="btn-outline" onClick={() => setServiceSearchTerm('')}>
+                  Clear Search
+                </button>
+              </div>
             ) : (
               <div className="services-grid">
-                {services.map((service) => (
+                {filteredServices.map((service) => (
                   <div key={service._id} className="service-card">
                     {service.image && (
                       <div className="service-card-image">
@@ -613,15 +790,36 @@ const AdminDashboardPage = () => {
 
             {/* Decorators List */}
             <h3 className="section-subheading">All Decorators</h3>
+            
+            {/* Search Decorators */}
+            {decorators.length > 0 && (
+              <div className="search-container" style={{ marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Search decorators by name, email, or specialty..."
+                  value={decoratorSearchTerm}
+                  onChange={(e) => setDecoratorSearchTerm(e.target.value)}
+                  className="form-input search-input"
+                />
+              </div>
+            )}
+
             {loading ? (
               <Loading />
             ) : decorators.length === 0 ? (
               <div className="empty-state">
                 <p>No decorators found.</p>
               </div>
+            ) : filteredDecorators.length === 0 ? (
+              <div className="empty-state">
+                <p>No decorators match your search criteria.</p>
+                <button className="btn-outline" onClick={() => setDecoratorSearchTerm('')}>
+                  Clear Search
+                </button>
+              </div>
             ) : (
               <div className="decorators-grid">
-                {decorators.map((decorator) => (
+                {filteredDecorators.map((decorator) => (
                   <div key={decorator._id} className="decorator-card">
                     <div className="decorator-header">
                       <h4 className="decorator-name">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createBooking } from '../services/api';
+import toast from 'react-hot-toast';
 import '../styles/modal.css';
 
 const BookingModal = ({ service, isOpen, onClose, onSuccess }) => {
@@ -15,11 +16,13 @@ const BookingModal = ({ service, isOpen, onClose, onSuccess }) => {
     setError('');
     
     if (!bookingDate || !location) {
+      toast.error('Please fill in all fields');
       setError('Please fill in all fields');
       return;
     }
 
     setLoading(true);
+    const loadingToast = toast.loading('Creating booking...');
 
     try {
       const bookingData = {
@@ -29,9 +32,11 @@ const BookingModal = ({ service, isOpen, onClose, onSuccess }) => {
       };
 
       await createBooking(bookingData);
+      toast.success('Booking created successfully!', { id: loadingToast });
       onSuccess();
       onClose();
     } catch (err) {
+      toast.error(err.message || 'Failed to create booking', { id: loadingToast });
       setError(err.message || 'Failed to create booking');
     } finally {
       setLoading(false);

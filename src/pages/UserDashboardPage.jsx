@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getMyBookings, cancelBooking } from '../services/api';
 import Loading from '../components/Loading';
+import toast from 'react-hot-toast';
 import '../styles/dashboard.css';
 import 'animate.css';
 
+const ITEMS_PER_PAGE = 5;
+
 const UserDashboardPage = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date'); // 'date' or 'status'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
+  const [currentPage, setCurrentPage] = useState(1);
   const [profileData, setProfileData] = useState({
     name: user?.displayName || '',
     email: user?.email || '',
@@ -30,11 +37,14 @@ const UserDashboardPage = () => {
     });
 
     const fetchBookings = async () => {
+      setLoading(true);
       try {
         const response = await getMyBookings();
         setBookings(response.data || []);
+        toast.success('Bookings loaded successfully');
       } catch (err) {
         setError(err.message);
+        toast.error(err.message || 'Failed to load bookings');
       } finally {
         setLoading(false);
       }
@@ -48,12 +58,13 @@ const UserDashboardPage = () => {
       return;
     }
 
+    const loadingToast = toast.loading('Cancelling booking...');
     try {
       await cancelBooking(bookingId);
       setBookings(bookings.filter(b => b._id !== bookingId));
-      alert('Booking cancelled successfully');
+      toast.success('Booking cancelled successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error cancelling booking: ${err.message}`);
+      toast.error(err.message || 'Failed to cancel booking', { id: loadingToast });
     }
   };
 
@@ -62,6 +73,47 @@ const UserDashboardPage = () => {
       navigate('/payment', { state: { booking } });
     }
   };
+
+  // Filter and sort bookings
+  const filteredAndSortedBookings = useMemo(() => {
+    let filtered = [...bookings];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(booking =>
+        booking.serviceId?.service_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.status?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === 'date') {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      } else if (sortBy === 'status') {
+        const statusA = a.status || '';
+        const statusB = b.status || '';
+        if (sortOrder === 'asc') {
+          return statusA.localeCompare(statusB);
+        } else {
+          return statusB.localeCompare(statusA);
+        }
+      }
+      return 0;
+    });
+
+    return filtered;
+  }, [bookings, searchTerm, sortBy, sortOrder]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSortedBookings.length / ITEMS_PER_PAGE);
+  const paginatedBookings = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSortedBookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedBookings, currentPage]);
 
   const getPaymentHistory = () => {
     return bookings.filter(b => b.paymentStatus === 'paid');
@@ -166,6 +218,48 @@ const UserDashboardPage = () => {
         {activeTab === 'bookings' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
             <h2 className="section-heading">My Bookings</h2>
+            
+            {/* Search and Sort Controls */}
+            {bookings.length > 0 && (
+              <div className="bookings-controls">
+                <div className="search-container">
+                  <input
+                    type="text"
+                    placeholder="Search by service name, location, or status..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="form-input search-input"
+                  />
+                </div>
+                <div className="sort-container">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => {
+                      setSortBy(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="form-select"
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="status">Sort by Status</option>
+                  </select>
+                  <button
+                    className="btn-outline sort-order-btn"
+                    onClick={() => {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      setCurrentPage(1);
+                    }}
+                    title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                  >
+                    {sortOrder === 'asc' ? '↑' : '↓'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {bookings.length === 0 ? (
               <div className="empty-state">
                 <p>No bookings found.</p>
@@ -173,67 +267,99 @@ const UserDashboardPage = () => {
                   Browse Services
                 </button>
               </div>
-            ) : (
-              <div className="bookings-grid">
-                {bookings.map((booking) => (
-                  <div key={booking._id} className="booking-card">
-                    <div className="booking-header">
-                      <h3 className="booking-service-name">{booking.serviceId?.service_name}</h3>
-                      <span className={`status-badge status-${booking.status}`}>
-                        {booking.status}
-                      </span>
-                    </div>
-                    <div className="booking-details">
-                      <div className="booking-detail-item">
-                        <span className="detail-label">Date & Time:</span>
-                        <span className="detail-value">
-                          {new Date(booking.date).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">Location:</span>
-                        <span className="detail-value">{booking.location}</span>
-                      </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">Amount:</span>
-                        <span className="detail-value">
-                          ${booking.serviceId?.cost} {booking.serviceId?.unit}
-                        </span>
-                      </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">Payment:</span>
-                        <span className={`payment-badge payment-${booking.paymentStatus}`}>
-                          {booking.paymentStatus}
-                        </span>
-                      </div>
-                      {booking.decoratorId && (
-                        <div className="booking-detail-item">
-                          <span className="detail-label">Decorator:</span>
-                          <span className="detail-value">Assigned</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="booking-actions">
-                      {booking.paymentStatus === 'pending' && (
-                        <button
-                          className="btn-primary"
-                          onClick={() => handlePayment(booking)}
-                        >
-                          Pay Now
-                        </button>
-                      )}
-                      {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                        <button
-                          className="btn-outline btn-danger"
-                          onClick={() => handleCancel(booking._id)}
-                        >
-                          Cancel Booking
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            ) : filteredAndSortedBookings.length === 0 ? (
+              <div className="empty-state">
+                <p>No bookings match your search criteria.</p>
+                <button className="btn-outline" onClick={() => setSearchTerm('')}>
+                  Clear Search
+                </button>
               </div>
+            ) : (
+              <>
+                <div className="bookings-grid">
+                  {paginatedBookings.map((booking) => (
+                    <div key={booking._id} className="booking-card">
+                      <div className="booking-header">
+                        <h3 className="booking-service-name">{booking.serviceId?.service_name}</h3>
+                        <span className={`status-badge status-${booking.status}`}>
+                          {booking.status}
+                        </span>
+                      </div>
+                      <div className="booking-details">
+                        <div className="booking-detail-item">
+                          <span className="detail-label">Date & Time:</span>
+                          <span className="detail-value">
+                            {new Date(booking.date).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="booking-detail-item">
+                          <span className="detail-label">Location:</span>
+                          <span className="detail-value">{booking.location}</span>
+                        </div>
+                        <div className="booking-detail-item">
+                          <span className="detail-label">Amount:</span>
+                          <span className="detail-value">
+                            ${booking.serviceId?.cost} {booking.serviceId?.unit}
+                          </span>
+                        </div>
+                        <div className="booking-detail-item">
+                          <span className="detail-label">Payment:</span>
+                          <span className={`payment-badge payment-${booking.paymentStatus}`}>
+                            {booking.paymentStatus}
+                          </span>
+                        </div>
+                        {booking.decoratorId && (
+                          <div className="booking-detail-item">
+                            <span className="detail-label">Decorator:</span>
+                            <span className="detail-value">Assigned</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="booking-actions">
+                        {booking.paymentStatus === 'pending' && (
+                          <button
+                            className="btn-primary"
+                            onClick={() => handlePayment(booking)}
+                          >
+                            Pay Now
+                          </button>
+                        )}
+                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                          <button
+                            className="btn-outline btn-danger"
+                            onClick={() => handleCancel(booking._id)}
+                          >
+                            Cancel Booking
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="btn-outline"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </button>
+                    <span className="pagination-info">
+                      Page {currentPage} of {totalPages} ({filteredAndSortedBookings.length} bookings)
+                    </span>
+                    <button
+                      className="btn-outline"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -281,7 +407,6 @@ const UserDashboardPage = () => {
                       <button
                         className="btn-outline"
                         onClick={() => {
-                          // Generate receipt (can be enhanced with PDF generation)
                           const receipt = {
                             service: booking.serviceId?.service_name,
                             amount: `$${booking.serviceId?.cost} ${booking.serviceId?.unit}`,
@@ -290,6 +415,9 @@ const UserDashboardPage = () => {
                             paymentDate: new Date(booking.updatedAt || booking.date).toLocaleString(),
                             bookingId: booking._id,
                           };
+                          toast.success('Receipt details displayed', {
+                            duration: 5000,
+                          });
                           alert(`Receipt:\n\nService: ${receipt.service}\nAmount: ${receipt.amount}\nBooking Date: ${receipt.date}\nLocation: ${receipt.location}\nPayment Date: ${receipt.paymentDate}\nBooking ID: ${receipt.bookingId}`);
                         }}
                       >

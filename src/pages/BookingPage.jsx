@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createBooking } from '../services/api';
 import Loading from '../components/Loading';
+import toast from 'react-hot-toast';
 
 const BookingPage = () => {
   const navigate = useNavigate();
@@ -46,11 +47,12 @@ const BookingPage = () => {
         location: formData.location,
       };
 
+      const loadingToast = toast.loading('Creating booking...');
       const response = await createBooking(bookingData);
+      toast.success('Booking created successfully!', { id: loadingToast });
       navigate('/payment', { state: { booking: response.data } });
     } catch (error) {
-      alert(`Error creating booking: ${error.message}`);
-    } finally {
+      toast.error(error.message || 'Failed to create booking');
       setLoading(false);
     }
   };

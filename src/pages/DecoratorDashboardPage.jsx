@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDecoratorProjects, updateProjectStatus } from '../services/api';
 import Loading from '../components/Loading';
+import toast from 'react-hot-toast';
 import '../styles/dashboard.css';
 import 'animate.css';
 
@@ -45,8 +46,10 @@ const DecoratorDashboardPage = () => {
           return projectDate >= today && projectDate < tomorrow && p.status !== 'cancelled';
         });
         setTodaySchedule(todayProjects);
+        toast.success('Projects loaded successfully');
       } catch (err) {
         setError(err.message);
+        toast.error(err.message || 'Failed to load projects');
       } finally {
         setLoading(false);
       }
@@ -56,6 +59,7 @@ const DecoratorDashboardPage = () => {
   }, [user, navigate]);
 
   const handleStatusUpdate = async (bookingId, newStatus) => {
+    const loadingToast = toast.loading('Updating project status...');
     try {
       await updateProjectStatus(bookingId, newStatus);
       const response = await getDecoratorProjects();
@@ -80,9 +84,9 @@ const DecoratorDashboardPage = () => {
       });
       setTodaySchedule(todayProjects);
 
-      alert('Status updated successfully');
+      toast.success('Status updated successfully', { id: loadingToast });
     } catch (err) {
-      alert(`Error updating status: ${err.message}`);
+      toast.error(err.message || 'Failed to update status', { id: loadingToast });
     }
   };
 

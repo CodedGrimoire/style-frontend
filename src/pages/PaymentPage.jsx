@@ -5,6 +5,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { useAuth } from '../context/AuthContext';
 import { createPaymentIntent, confirmPayment } from '../services/api';
 import Loading from '../components/Loading';
+import toast from 'react-hot-toast';
 
 // Only initialize Stripe if we have a valid publishable key
 const getStripeKey = () => {
@@ -116,7 +117,7 @@ const PaymentPage = () => {
   }, [user, booking, navigate]);
 
   const handleSuccess = () => {
-    alert('Payment successful!');
+    toast.success('Payment successful!');
     navigate('/dashboard');
   };
 
