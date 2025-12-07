@@ -26,8 +26,9 @@ function App() {
       <Router>
         <div>
           <Navbar />
-          <AuthErrorBanner />
-          <Routes>
+          <div style={{ paddingTop: '80px' }}>
+            <AuthErrorBanner />
+            <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceDetailsPage />} />
@@ -75,7 +76,8 @@ function App() {
               }
             />
             <Route path="*" element={<Error message="404 - Page Not Found" />} />
-          </Routes>
+            </Routes>
+          </div>
         </div>
       </Router>
     </AuthProvider>

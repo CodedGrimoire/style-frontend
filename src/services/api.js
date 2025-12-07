@@ -2,21 +2,25 @@ import { auth } from '../../firebase';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
 
-// Get Firebase token for authentication
-const getAuthToken = async () => {
+// Get Firebase JWT token for authentication
+// getIdToken() automatically refreshes expired tokens
+const getAuthToken = async (forceRefresh = false) => {
   const user = auth.currentUser;
   if (!user) return null;
-  return user.getIdToken();
+  // forceRefresh: true to force token refresh (useful after 401 errors)
+  return user.getIdToken(forceRefresh);
 };
 
-// API request helper
-const apiRequest = async (endpoint, options = {}) => {
+// API request helper with automatic token refresh on 401
+const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
   const token = await getAuthToken();
   
   const config = {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      // Only include Authorization header if we have a token
+      // Public endpoints don't need it, but it's harmless to include
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
@@ -28,6 +32,16 @@ const apiRequest = async (endpoint, options = {}) => {
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
   
+  // Handle 401 Unauthorized - token might be expired, try refreshing once
+  if (response.status === 401 && retryCount === 0 && token) {
+    console.log('Token expired, refreshing...');
+    const refreshedToken = await getAuthToken(true); // Force refresh
+    if (refreshedToken) {
+      // Retry the request with refreshed token
+      return apiRequest(endpoint, options, retryCount + 1);
+    }
+  }
+  
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'API request failed' }));
     const errorMessage = error.message || 'API request failed';
@@ -35,6 +49,11 @@ const apiRequest = async (endpoint, options = {}) => {
     // Handle "User not found" error - this means the backend needs user profile creation
     if (errorMessage.includes('User not found') || errorMessage.includes('profile registration')) {
       throw new Error('USER_PROFILE_REQUIRED: ' + errorMessage);
+    }
+    
+    // Handle authentication errors
+    if (response.status === 401) {
+      throw new Error('Authentication failed. Please log in again.');
     }
     
     throw new Error(errorMessage);
