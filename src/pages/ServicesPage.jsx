@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getServices } from '../services/api';
 import Loading from '../components/Loading';
+import '../styles/pages.css';
+import 'animate.css';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -9,14 +11,11 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [priceRange, setPriceRange] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [animate, setAnimate] = useState(false);
 
   const categories = ['interior', 'exterior', 'event', 'commercial', 'residential', 'other'];
-  const priceRanges = [
-    { label: 'Budget', min: 0, max: 100 },
-    { label: 'Standard', min: 100, max: 500 },
-    { label: 'Premium', min: 500, max: Infinity },
-  ];
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -28,6 +27,7 @@ const ServicesPage = () => {
         console.error('Error fetching services:', error);
       } finally {
         setLoading(false);
+        setTimeout(() => setAnimate(true), 100);
       }
     };
     fetchServices();
@@ -36,109 +36,140 @@ const ServicesPage = () => {
   useEffect(() => {
     let filtered = [...services];
 
-    // Search filter
+    // Search filter by service name
     if (searchTerm) {
       filtered = filtered.filter(service =>
-        service.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        service.service_name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Price range filter
-    if (priceRange) {
-      const range = priceRanges.find(r => r.label === priceRange);
-      if (range) {
-        filtered = filtered.filter(service => 
-          service.cost >= range.min && service.cost < range.max
-        );
-      }
+    // Budget range filter (min ~ max)
+    if (minPrice) {
+      const min = parseFloat(minPrice);
+      filtered = filtered.filter(service => service.cost >= min);
+    }
+
+    if (maxPrice) {
+      const max = parseFloat(maxPrice);
+      filtered = filtered.filter(service => service.cost <= max);
     }
 
     setFilteredServices(filtered);
-  }, [searchTerm, priceRange, services]);
+  }, [searchTerm, minPrice, maxPrice, services]);
 
   if (loading) return <Loading />;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Our Services</h1>
+    <div className="page-container">
+      <section className="section">
+        <div className="container">
+          <h1 className={`section-title ${animate ? 'animate__animated animate__fadeInUp' : ''}`}>
+            Our Services
+          </h1>
 
-      {/* Search and Filters */}
-      <div style={{ 
-        marginBottom: '2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        <input
-          type="text"
-          placeholder="Search services..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ padding: '0.5rem', width: '100%', maxWidth: '400px' }}
-        />
-
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{ padding: '0.5rem' }}
-          >
-            <option value="">All Categories</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-
-          <select
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-            style={{ padding: '0.5rem' }}
-          >
-            <option value="">All Price Ranges</option>
-            {priceRanges.map(range => (
-              <option key={range.label} value={range.label}>{range.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Services Grid */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '2rem'
-      }}>
-        {filteredServices.map((service) => (
-          <div key={service._id} style={{ 
-            border: '1px solid #ccc', 
-            padding: '1rem',
-            borderRadius: '8px'
-          }}>
-            {service.image && (
-              <img 
-                src={service.image} 
-                alt={service.service_name}
-                style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+          {/* Search and Filters */}
+          <div className={`services-filters ${animate ? 'animate__animated animate__fadeInUp animate__delay-1s' : ''}`}>
+            <div className="filter-group">
+              <label className="filter-label">Search by Service Name</label>
+              <input
+                type="text"
+                placeholder="Search services..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-input"
               />
-            )}
-            <h3>{service.service_name}</h3>
-            <p>{service.description}</p>
-            <p><strong>${service.cost} {service.unit}</strong></p>
-            <p>Category: {service.category}</p>
-            <Link to={`/service/${service._id}`}>
-              <button>View Details</button>
-            </Link>
-          </div>
-        ))}
-      </div>
+            </div>
 
-      {filteredServices.length === 0 && (
-        <p>No services found matching your criteria.</p>
-      )}
+            <div className="filter-row">
+              <div className="filter-group">
+                <label className="filter-label">Service Type</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label className="filter-label">Min Price ($)</label>
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="form-input"
+                  min="0"
+                />
+              </div>
+
+              <div className="filter-group">
+                <label className="filter-label">Max Price ($)</label>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="form-input"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Services Grid */}
+          <div className="services-grid">
+            {filteredServices.map((service, index) => (
+              <div 
+                key={service._id} 
+                className={`service-card ${animate ? 'animate__animated animate__fadeInUp' : ''}`}
+                style={animate ? { animationDelay: `${(index + 1) * 0.1}s` } : {}}
+              >
+                {service.image && (
+                  <div className="service-card-image">
+                    <img 
+                      src={service.image} 
+                      alt={service.service_name}
+                    />
+                  </div>
+                )}
+                <div className="service-card-content">
+                  <h3 className="service-card-title">{service.service_name}</h3>
+                  <p className="service-card-description">
+                    {service.description?.substring(0, 100)}
+                    {service.description?.length > 100 ? '...' : ''}
+                  </p>
+                  <div className="service-card-meta">
+                    <span className="service-card-category">{service.category}</span>
+                    <div className="service-card-price">
+                      ${service.cost} <span>{service.unit}</span>
+                    </div>
+                  </div>
+                  <Link to={`/service/${service._id}`} className="btn-outline service-card-btn">
+                    View Details
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredServices.length === 0 && (
+            <div className="text-center" style={{ marginTop: '3rem', padding: '2rem' }}>
+              <p style={{ fontSize: '1.1rem', color: 'var(--gray)' }}>
+                No services found matching your criteria.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };
 
 export default ServicesPage;
-

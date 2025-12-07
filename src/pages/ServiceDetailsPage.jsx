@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getServiceById } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
 import Error from '../components/Error';
+import BookingModal from '../components/BookingModal';
+import '../styles/pages.css';
+import 'animate.css';
 
 const ServiceDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [bookingDate, setBookingDate] = useState('');
-  const [location, setLocation] = useState('');
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -22,24 +27,22 @@ const ServiceDetailsPage = () => {
         setError(err.message);
       } finally {
         setLoading(false);
+        setTimeout(() => setAnimate(true), 100);
       }
     };
     fetchService();
   }, [id]);
 
-  const handleBooking = () => {
-    if (!bookingDate || !location) {
-      alert('Please fill in all fields');
+  const handleBookNow = () => {
+    if (!user) {
+      navigate('/login', { state: { from: `/service/${id}` } });
       return;
     }
-    // Navigate to booking page with service data
-    navigate('/booking', {
-      state: {
-        service,
-        bookingDate,
-        location,
-      },
-    });
+    setShowBookingModal(true);
+  };
+
+  const handleBookingSuccess = () => {
+    navigate('/dashboard');
   };
 
   if (loading) return <Loading />;
@@ -47,52 +50,67 @@ const ServiceDetailsPage = () => {
   if (!service) return <Error message="Service not found" />;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      {service.image && (
-        <img 
-          src={service.image} 
-          alt={service.service_name}
-          style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', marginBottom: '2rem' }}
-        />
-      )}
-      <h1>{service.service_name}</h1>
-      <p><strong>Category:</strong> {service.category}</p>
-      <p><strong>Price:</strong> ${service.cost} {service.unit}</p>
-      <p><strong>Description:</strong></p>
-      <p>{service.description}</p>
+    <div className="page-container">
+      <section className="section">
+        <div className="container">
+          <div className={`service-details ${animate ? 'animate__animated animate__fadeInUp' : ''}`}>
+            {service.image && (
+              <div className="service-details-image">
+                <img 
+                  src={service.image} 
+                  alt={service.service_name}
+                />
+              </div>
+            )}
 
-      <div style={{ marginTop: '3rem', borderTop: '1px solid #ccc', paddingTop: '2rem' }}>
-        <h2>Book This Service</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-          <div>
-            <label>Booking Date & Time:</label>
-            <input
-              type="datetime-local"
-              value={bookingDate}
-              onChange={(e) => setBookingDate(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-              required
-            />
+            <div className="service-details-content">
+              <h1 className="service-details-title">{service.service_name}</h1>
+              
+              <div className="service-details-meta">
+                <span className="service-details-category">{service.category}</span>
+                <div className="service-details-price">
+                  ${service.cost} <span>{service.unit}</span>
+                </div>
+              </div>
+
+              <div className="service-details-description">
+                <h3>Description</h3>
+                <p>{service.description}</p>
+              </div>
+
+              <div className="service-details-actions">
+                {user ? (
+                  <button 
+                    onClick={handleBookNow} 
+                    className="btn-primary service-book-btn"
+                  >
+                    Book Now
+                  </button>
+                ) : (
+                  <div className="service-login-prompt">
+                    <p>Please log in to book this service</p>
+                    <button 
+                      onClick={() => navigate('/login', { state: { from: `/service/${id}` } })}
+                      className="btn-primary"
+                    >
+                      Login to Book
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div>
-            <label>Location:</label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter your address"
-              style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-              required
-            />
-          </div>
-          <button onClick={handleBooking} style={{ padding: '0.75rem', marginTop: '1rem' }}>
-            Book Now
-          </button>
         </div>
-      </div>
+      </section>
+
+      <BookingModal
+        service={service}
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onSuccess={handleBookingSuccess}
+      />
     </div>
   );
 };
 
 export default ServiceDetailsPage;
-
