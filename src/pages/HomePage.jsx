@@ -7,6 +7,7 @@ import '../styles/pages.css';
 const HomePage = () => {
   const [featuredServices, setFeaturedServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -17,6 +18,8 @@ const HomePage = () => {
         console.error('Error fetching services:', error);
       } finally {
         setLoading(false);
+        // Trigger animation after content loads
+        setTimeout(() => setAnimate(true), 100);
       }
     };
     fetchServices();
@@ -29,7 +32,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="container">
-          <div className="hero-content">
+          <div className={`hero-content ${animate ? 'animate__animated animate__fadeInUp' : ''}`}>
             <h1 className="hero-title">Welcome to StyleDecor</h1>
             <p className="hero-subtitle">
               Transform your space with our professional decoration services
@@ -44,10 +47,14 @@ const HomePage = () => {
       {/* Services Section */}
       <section className="section">
         <div className="container">
-          <h2 className="section-title">Featured Services</h2>
+          <h2 className={`section-title ${animate ? 'animate__animated animate__fadeInUp animate__delay-1s' : ''}`}>Featured Services</h2>
           <div className="services-grid">
-            {featuredServices.map((service) => (
-              <div key={service._id} className="service-card">
+            {featuredServices.map((service, index) => (
+              <div 
+                key={service._id} 
+                className={`service-card ${animate ? 'animate__animated animate__fadeInUp' : ''}`}
+                style={{ animationDelay: `${(index + 1) * 0.2}s` }}
+              >
                 {service.image && (
                   <div className="service-card-image">
                     <img 
@@ -70,7 +77,7 @@ const HomePage = () => {
             ))}
           </div>
           {featuredServices.length > 0 && (
-            <div className="text-center" style={{ marginTop: '3rem' }}>
+            <div className={`text-center ${animate ? 'animate__animated animate__fadeInUp animate__delay-2s' : ''}`} style={{ marginTop: '3rem' }}>
               <Link to="/services" className="btn-primary">
                 View All Services
               </Link>
@@ -82,8 +89,8 @@ const HomePage = () => {
       {/* Top Decorators Section */}
       <section className="section section-alt">
         <div className="container">
-          <h2 className="section-title">Top Decorators</h2>
-          <p className="section-subtitle">
+          <h2 className={`section-title ${animate ? 'animate__animated animate__fadeInUp animate__delay-3s' : ''}`}>Top Decorators</h2>
+          <p className={`section-subtitle ${animate ? 'animate__animated animate__fadeInUp animate__delay-3s' : ''}`}>
             Coming soon - Featured decorators will be displayed here
           </p>
         </div>
