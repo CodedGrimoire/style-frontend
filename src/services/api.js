@@ -43,8 +43,32 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
   }
   
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'API request failed' }));
-    const errorMessage = error.message || 'API request failed';
+    let error;
+    let errorMessage;
+    
+    try {
+      const errorText = await response.text();
+      try {
+        error = JSON.parse(errorText);
+        errorMessage = error.message || error.error || `HTTP ${response.status}: ${response.statusText}`;
+      } catch {
+        // If response is not JSON, use the text as error message
+        errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
+        error = { message: errorMessage };
+      }
+    } catch (parseError) {
+      errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      error = { message: errorMessage };
+    }
+    
+    // Log detailed error for debugging
+    console.error('API Error:', {
+      status: response.status,
+      statusText: response.statusText,
+      endpoint,
+      errorMessage,
+      error
+    });
     
     // Handle "User not found" error - this means the backend needs user profile creation
     if (errorMessage.includes('User not found') || errorMessage.includes('profile registration')) {
@@ -144,6 +168,11 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
     // Handle authentication errors
     if (response.status === 401) {
       throw new Error('Authentication failed. Please log in again.');
+    }
+    
+    // Handle server errors with more detail
+    if (response.status >= 500) {
+      throw new Error(`Server error (${response.status}): ${errorMessage}. Please check the backend logs.`);
     }
     
     throw new Error(errorMessage);
@@ -364,9 +393,22 @@ export const assignDecorator = (bookingId, decoratorId) => {
 };
 
 export const makeUserDecorator = (userId, specialties) => {
+  // Ensure specialties is an array
+  const specialtiesArray = Array.isArray(specialties) ? specialties : [specialties].filter(Boolean);
+  
+  console.log('makeUserDecorator called with:', { userId, specialties, specialtiesArray });
+  
+  if (!userId) {
+    throw new Error('User ID is required');
+  }
+  
+  if (!specialtiesArray || specialtiesArray.length === 0) {
+    throw new Error('At least one specialty is required');
+  }
+  
   return apiRequest(`/api/admin/users/${userId}/make-decorator`, {
     method: 'PUT',
-    body: { specialties },
+    body: { specialties: specialtiesArray },
   });
 };
 

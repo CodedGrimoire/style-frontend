@@ -12,16 +12,16 @@ L.Icon.Default.mergeOptions({
 });
 
 const ServiceCoverageMap = () => {
-  // Default center (can be customized)
-  const center = [40.7128, -74.0060]; // New York City coordinates
-  const zoom = 10;
+  // Center on Bangladesh (near Dhaka)
+  const center = [23.8103, 90.4125]; // Dhaka, Bangladesh coordinates
+  const zoom = 7; // Zoom level to show all major cities
 
-  // Sample service coverage locations
+  // Service coverage locations in Bangladesh
   const locations = [
-    { position: [40.7128, -74.0060], name: 'New York City', description: 'Full service coverage' },
-    { position: [40.7589, -73.9851], name: 'Manhattan', description: 'Premium services available' },
-    { position: [40.6782, -73.9442], name: 'Brooklyn', description: 'All services available' },
-    { position: [40.7282, -73.7949], name: 'Queens', description: 'Standard services' },
+    { position: [23.8103, 90.4125], name: 'Dhaka', description: 'Full service coverage - Capital city' },
+    { position: [24.8949, 91.8687], name: 'Sylhet', description: 'All decoration services available' },
+    { position: [22.3569, 91.7832], name: 'Chittagong', description: 'Premium services available' },
+    { position: [24.3745, 88.6042], name: 'Rajshahi', description: 'Standard and premium services' },
   ];
 
   return (

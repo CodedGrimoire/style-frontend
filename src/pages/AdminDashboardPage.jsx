@@ -252,13 +252,36 @@ const AdminDashboardPage = () => {
     }
     const loadingToast = toast.loading('Converting user to decorator...');
     try {
-      await makeUserDecorator(selectedUserId, decoratorSpecialties);
+      console.log('Making user decorator:', { 
+        userId: selectedUserId, 
+        specialties: decoratorSpecialties,
+        specialtiesType: typeof decoratorSpecialties,
+        isArray: Array.isArray(decoratorSpecialties)
+      });
+      
+      const response = await makeUserDecorator(selectedUserId, decoratorSpecialties);
+      console.log('Make decorator response:', response);
+      
+      // Clear form
       setSelectedUserId('');
       setDecoratorSpecialties([]);
-      loadData();
-      toast.success('User converted to decorator successfully', { id: loadingToast });
+      
+      // Reload data to refresh users and decorators lists
+      await loadData();
+      
+      toast.success('User converted to decorator successfully. They will appear in the decorators list with "pending" status.', { id: loadingToast, duration: 5000 });
     } catch (err) {
-      toast.error(err.message || 'Failed to convert user', { id: loadingToast });
+      console.error('Error making user decorator:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        userId: selectedUserId,
+        specialties: decoratorSpecialties
+      });
+      
+      // Show more detailed error message
+      const errorMessage = err.message || 'Failed to convert user';
+      toast.error(`Error: ${errorMessage}`, { id: loadingToast, duration: 6000 });
     }
   };
 
@@ -821,29 +844,83 @@ const AdminDashboardPage = () => {
                   >
                     <option value="">Select a user</option>
                     {users
-                      .filter(u => u.role !== 'decorator' && u.role !== 'admin')
+                      .filter(u => u.role === 'user')
                       .map(user => (
                         <option key={user._id} value={user._id}>
                           {user.name || user.email} ({user.email})
                         </option>
                       ))}
                   </select>
+                  {users.filter(u => u.role === 'user').length === 0 && (
+                    <p style={{ 
+                      marginTop: '0.5rem', 
+                      fontSize: '0.875rem', 
+                      color: 'var(--gray-dark)',
+                      fontStyle: 'italic'
+                    }}>
+                      No regular users available to convert to decorator.
+                    </p>
+                  )}
                 </div>
                 <div className="form-group form-group-full">
-                  <label className="form-label">Specialties (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={decoratorSpecialties.join(', ')}
-                    onChange={(e) => {
-                      const specialties = e.target.value
-                        .split(',')
-                        .map(s => s.trim())
-                        .filter(s => s.length > 0);
-                      setDecoratorSpecialties(specialties);
-                    }}
-                    className="form-input"
-                    placeholder="e.g., interior, residential, wedding"
-                  />
+                  <label className="form-label">Specialties (select one or more)</label>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+                    gap: '0.75rem',
+                    marginTop: '0.5rem'
+                  }}>
+                    {['interior', 'exterior', 'event', 'commercial', 'residential', 'other'].map((category) => (
+                      <label
+                        key={category}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          cursor: 'pointer',
+                          padding: '0.5rem',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--beige)',
+                          backgroundColor: decoratorSpecialties.includes(category) 
+                            ? 'var(--magenta-light)' 
+                            : 'transparent',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={decoratorSpecialties.includes(category)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setDecoratorSpecialties([...decoratorSpecialties, category]);
+                            } else {
+                              setDecoratorSpecialties(decoratorSpecialties.filter(s => s !== category));
+                            }
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ 
+                          textTransform: 'capitalize',
+                          fontSize: '0.9rem',
+                          color: decoratorSpecialties.includes(category) 
+                            ? 'var(--burgundy-dark)' 
+                            : 'var(--gray-dark)'
+                        }}>
+                          {category}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  {decoratorSpecialties.length > 0 && (
+                    <div style={{ 
+                      marginTop: '0.75rem', 
+                      fontSize: '0.875rem', 
+                      color: 'var(--gray-dark)',
+                      fontStyle: 'italic'
+                    }}>
+                      Selected: {decoratorSpecialties.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <button
