@@ -491,11 +491,15 @@
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
 }
 
 .decorator-card:hover {
   border-color: var(--burgundy);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .decorator-header {
@@ -504,13 +508,18 @@
   align-items: flex-start;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--beige);
+  border-bottom: 2px solid var(--beige);
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .decorator-name {
   font-size: 1.25rem;
   color: var(--burgundy-dark);
   margin: 0;
+  font-weight: 600;
+  flex: 1;
+  min-width: 150px;
 }
 
 .decorator-details {
@@ -518,17 +527,38 @@
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
+  flex: 1;
 }
 
 .decorator-detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.decorator-detail-item:last-child {
+  border-bottom: none;
+}
+
+.decorator-detail-item .detail-label {
+  font-weight: 500;
+  color: var(--gray-dark);
+}
+
+.decorator-detail-item .detail-value {
+  color: var(--burgundy);
+  font-weight: 500;
 }
 
 .decorator-actions {
   padding-top: 1rem;
-  border-top: 1px solid var(--beige);
+  border-top: 2px solid var(--beige);
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .assign-decorator-form {

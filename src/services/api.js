@@ -76,7 +76,7 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
           console.log('Registering with name:', userName);
           
           // Make a direct registration request to avoid circular dependency
-          const regResponse = await fetch(`${API_BASE_URL}/register`, {
+          const regResponse = await fetch(`${API_BASE_URL}/api/register`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ export const registerUser = async (name, role = 'user', image = null) => {
     console.log('Registering user with:', { name: name.trim(), role, email: user.email });
 
     // Make a direct fetch call to avoid circular dependency with apiRequest
-    const response = await fetch(`${API_BASE_URL}/register`, {
+    const response = await fetch(`${API_BASE_URL}/api/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -270,9 +270,9 @@ export const getCurrentUser = async () => {
     // We'll use the register endpoint which is idempotent and returns the user profile
     // But first, let's try a direct profile endpoint if it exists
     try {
-      return await apiRequest('/users/me');
+      return await apiRequest('/api/users/me');
     } catch (error) {
-      // If /users/me doesn't exist, we'll need to get profile from registration response
+      // If /api/users/me doesn't exist, we'll need to get profile from registration response
       // For now, return null and let the component handle it
       console.log('User profile endpoint not available, will fetch from registration');
       return null;
@@ -284,32 +284,32 @@ export const getCurrentUser = async () => {
 };
 
 export const createBooking = (bookingData) => {
-  return apiRequest('/bookings', {
+  return apiRequest('/api/bookings', {
     method: 'POST',
     body: bookingData,
   });
 };
 
 export const getMyBookings = () => {
-  return apiRequest('/bookings/me');
+  return apiRequest('/api/bookings/me');
 };
 
 export const cancelBooking = (id) => {
-  return apiRequest(`/bookings/${id}`, {
+  return apiRequest(`/api/bookings/${id}`, {
     method: 'DELETE',
   });
 };
 
 // Payment endpoints
 export const createPaymentIntent = (bookingId) => {
-  return apiRequest('/payments/create-intent', {
+  return apiRequest('/api/payments/create-intent', {
     method: 'POST',
     body: { bookingId },
   });
 };
 
 export const confirmPayment = (paymentId) => {
-  return apiRequest('/payments/confirm', {
+  return apiRequest('/api/payments/confirm', {
     method: 'POST',
     body: { paymentId },
   });
@@ -317,11 +317,11 @@ export const confirmPayment = (paymentId) => {
 
 // Decorator endpoints
 export const getDecoratorProjects = () => {
-  return apiRequest('/decorator/projects');
+  return apiRequest('/api/decorator/projects');
 };
 
 export const updateProjectStatus = (bookingId, status) => {
-  return apiRequest(`/decorator/project/${bookingId}/status`, {
+  return apiRequest(`/api/decorator/project/${bookingId}/status`, {
     method: 'PUT',
     body: { status },
   });
@@ -329,21 +329,21 @@ export const updateProjectStatus = (bookingId, status) => {
 
 // Admin endpoints
 export const createService = (serviceData) => {
-  return apiRequest('/admin/services', {
+  return apiRequest('/api/admin/services', {
     method: 'POST',
     body: serviceData,
   });
 };
 
 export const updateService = (id, serviceData) => {
-  return apiRequest(`/admin/services/${id}`, {
+  return apiRequest(`/api/admin/services/${id}`, {
     method: 'PUT',
     body: serviceData,
   });
 };
 
 export const deleteService = (id) => {
-  return apiRequest(`/admin/services/${id}`, {
+  return apiRequest(`/api/admin/services/${id}`, {
     method: 'DELETE',
   });
 };
@@ -353,31 +353,31 @@ export const getAllBookings = (filters = {}) => {
   if (filters.status) queryParams.append('status', filters.status);
   if (filters.paymentStatus) queryParams.append('paymentStatus', filters.paymentStatus);
   const query = queryParams.toString();
-  return apiRequest(`/admin/bookings${query ? `?${query}` : ''}`);
+  return apiRequest(`/api/admin/bookings${query ? `?${query}` : ''}`);
 };
 
 export const assignDecorator = (bookingId, decoratorId) => {
-  return apiRequest(`/admin/bookings/${bookingId}/assign`, {
+  return apiRequest(`/api/admin/bookings/${bookingId}/assign`, {
     method: 'PUT',
     body: { decoratorId },
   });
 };
 
 export const makeUserDecorator = (userId, specialties) => {
-  return apiRequest(`/admin/users/${userId}/make-decorator`, {
+  return apiRequest(`/api/admin/users/${userId}/make-decorator`, {
     method: 'PUT',
     body: { specialties },
   });
 };
 
 export const approveDecorator = (decoratorId) => {
-  return apiRequest(`/admin/decorators/${decoratorId}/approve`, {
+  return apiRequest(`/api/admin/decorators/${decoratorId}/approve`, {
     method: 'PUT',
   });
 };
 
 export const disableDecorator = (decoratorId) => {
-  return apiRequest(`/admin/decorators/${decoratorId}/disable`, {
+  return apiRequest(`/api/admin/decorators/${decoratorId}/disable`, {
     method: 'PUT',
   });
 };
@@ -387,17 +387,17 @@ export const getRevenueAnalytics = (startDate = null, endDate = null) => {
   if (startDate) queryParams.append('startDate', startDate);
   if (endDate) queryParams.append('endDate', endDate);
   const query = queryParams.toString();
-  return apiRequest(`/admin/analytics/revenue${query ? `?${query}` : ''}`);
+  return apiRequest(`/api/admin/analytics/revenue${query ? `?${query}` : ''}`);
 };
 
 export const getServiceDemandAnalytics = () => {
-  return apiRequest('/admin/analytics/service-demand');
+  return apiRequest('/api/admin/analytics/service-demand');
 };
 
 // Get all decorators (admin only)
 export const getAllDecorators = async () => {
   try {
-    return await apiRequest('/admin/decorators');
+    return await apiRequest('/api/admin/decorators');
   } catch (error) {
     console.warn('Get all decorators endpoint not available:', error.message);
     return { data: [] };
@@ -407,7 +407,7 @@ export const getAllDecorators = async () => {
 // Get all users (admin only)
 export const getAllUsers = async () => {
   try {
-    return await apiRequest('/admin/users');
+    return await apiRequest('/api/admin/users');
   } catch (error) {
     console.warn('Get all users endpoint not available:', error.message);
     return { data: [] };

@@ -78,15 +78,43 @@ const AdminDashboardPage = () => {
             getAllDecorators(),
             getAllUsers(),
           ]);
-          setDecorators(decoratorsRes.data || []);
-          setUsers(usersRes.data || []);
-          toast.success('Decorators and users loaded successfully');
+          console.log('Decorators response:', decoratorsRes);
+          console.log('Users response:', usersRes);
+          
+          // Handle different response formats
+          let decoratorsData = [];
+          if (Array.isArray(decoratorsRes)) {
+            decoratorsData = decoratorsRes;
+          } else if (decoratorsRes?.data) {
+            decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
+          } else if (decoratorsRes?.success && decoratorsRes?.data) {
+            decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
+          }
+          
+          let usersData = [];
+          if (Array.isArray(usersRes)) {
+            usersData = usersRes;
+          } else if (usersRes?.data) {
+            usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
+          } else if (usersRes?.success && usersRes?.data) {
+            usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
+          }
+          
+          console.log('Parsed decorators:', decoratorsData);
+          console.log('Parsed users:', usersData);
+          
+          setDecorators(decoratorsData);
+          setUsers(usersData);
+          if (decoratorsData.length > 0 || usersData.length > 0) {
+            toast.success(`Loaded ${decoratorsData.length} decorators and ${usersData.length} users`);
+          } else {
+            toast.info('No decorators or users found');
+          }
         } catch (err) {
           console.error('Error loading decorators/users:', err);
-          // If endpoints don't exist, set empty arrays
           setDecorators([]);
           setUsers([]);
-          toast.error('Failed to load decorators/users');
+          toast.error(err.message || 'Failed to load decorators/users');
         }
       } else if (activeTab === 'analytics') {
         const [revenue, demand] = await Promise.all([
@@ -789,103 +817,104 @@ const AdminDashboardPage = () => {
             </div>
 
             {/* Decorators List */}
-            <h3 className="section-subheading">All Decorators</h3>
-            
-            {/* Search Decorators */}
-            {decorators.length > 0 && (
-              <div className="search-container" style={{ marginBottom: '1.5rem' }}>
-                <input
-                  type="text"
-                  placeholder="Search decorators by name, email, or specialty..."
-                  value={decoratorSearchTerm}
-                  onChange={(e) => setDecoratorSearchTerm(e.target.value)}
-                  className="form-input search-input"
-                />
-              </div>
-            )}
+            <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '2px solid var(--beige)' }}>
+              <h3 className="section-subheading">All Decorators ({decorators.length})</h3>
+              
+              {/* Search Decorators */}
+              {decorators.length > 0 && (
+                <div className="search-container" style={{ marginBottom: '1.5rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Search decorators by name, email, or specialty..."
+                    value={decoratorSearchTerm}
+                    onChange={(e) => setDecoratorSearchTerm(e.target.value)}
+                    className="form-input search-input"
+                  />
+                </div>
+              )}
 
-            {loading ? (
-              <Loading />
-            ) : decorators.length === 0 ? (
-              <div className="empty-state">
-                <p>No decorators found.</p>
-              </div>
-            ) : filteredDecorators.length === 0 ? (
-              <div className="empty-state">
-                <p>No decorators match your search criteria.</p>
-                <button className="btn-outline" onClick={() => setDecoratorSearchTerm('')}>
-                  Clear Search
-                </button>
-              </div>
-            ) : (
-              <div className="decorators-grid">
-                {filteredDecorators.map((decorator) => (
-                  <div key={decorator._id} className="decorator-card">
-                    <div className="decorator-header">
-                      <h4 className="decorator-name">
-                        {decorator.userId?.name || decorator.userId?.email || 'Unknown'}
-                      </h4>
-                      <span className={`status-badge status-${decorator.status}`}>
-                        {decorator.status}
-                      </span>
+              {loading && activeTab === 'decorators' ? (
+                <Loading />
+              ) : decorators.length === 0 ? (
+                <div className="empty-state">
+                  <p>No decorators found. Create decorators by converting users to decorators above.</p>
+                </div>
+              ) : filteredDecorators.length === 0 ? (
+                <div className="empty-state">
+                  <p>No decorators match your search criteria.</p>
+                  <button className="btn-outline" onClick={() => setDecoratorSearchTerm('')}>
+                    Clear Search
+                  </button>
+                </div>
+              ) : (
+                <div className="decorators-grid">
+                  {filteredDecorators.map((decorator) => (
+                    <div key={decorator._id} className="decorator-card">
+                      <div className="decorator-header">
+                        <h4 className="decorator-name">
+                          {decorator.userId?.name || decorator.userId?.email || 'Unknown'}
+                        </h4>
+                        <span className={`status-badge status-${decorator.status}`}>
+                          {decorator.status}
+                        </span>
+                      </div>
+                      <div className="decorator-details">
+                        <div className="decorator-detail-item">
+                          <span className="detail-label">Email:</span>
+                          <span className="detail-value">
+                            {decorator.userId?.email || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="decorator-detail-item">
+                          <span className="detail-label">Specialties:</span>
+                          <span className="detail-value">
+                            {decorator.specialties?.join(', ') || 'None'}
+                          </span>
+                        </div>
+                        <div className="decorator-detail-item">
+                          <span className="detail-label">Rating:</span>
+                          <span className="detail-value">
+                            {decorator.rating || 0} / 5
+                          </span>
+                        </div>
+                        <div className="decorator-detail-item">
+                          <span className="detail-label">Projects:</span>
+                          <span className="detail-value">
+                            {decorator.completedProjects || 0} completed
+                          </span>
+                        </div>
+                      </div>
+                      <div className="decorator-actions">
+                        {decorator.status === 'pending' && (
+                          <button
+                            className="btn-primary"
+                            onClick={() => handleApproveDecorator(decorator._id)}
+                          >
+                            Approve
+                          </button>
+                        )}
+                        {decorator.status === 'approved' && (
+                          <button
+                            className="btn-outline btn-danger"
+                            onClick={() => handleDisableDecorator(decorator._id)}
+                          >
+                            Disable
+                          </button>
+                        )}
+                        {decorator.status === 'disabled' && (
+                          <button
+                            className="btn-primary"
+                            onClick={() => handleApproveDecorator(decorator._id)}
+                          >
+                            Re-enable
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="decorator-details">
-                      <div className="decorator-detail-item">
-                        <span className="detail-label">Email:</span>
-                        <span className="detail-value">
-                          {decorator.userId?.email || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="decorator-detail-item">
-                        <span className="detail-label">Specialties:</span>
-                        <span className="detail-value">
-                          {decorator.specialties?.join(', ') || 'None'}
-                        </span>
-                      </div>
-                      <div className="decorator-detail-item">
-                        <span className="detail-label">Rating:</span>
-                        <span className="detail-value">
-                          {decorator.rating || 0} / 5
-                        </span>
-                      </div>
-                      <div className="decorator-detail-item">
-                        <span className="detail-label">Projects:</span>
-                        <span className="detail-value">
-                          {decorator.completedProjects || 0} completed
-                        </span>
-                      </div>
-                    </div>
-                    <div className="decorator-actions">
-                      {decorator.status === 'pending' && (
-                        <button
-                          className="btn-primary"
-                          onClick={() => handleApproveDecorator(decorator._id)}
-                        >
-                          Approve
-                        </button>
-                      )}
-                      {decorator.status === 'approved' && (
-                        <button
-                          className="btn-outline btn-danger"
-                          onClick={() => handleDisableDecorator(decorator._id)}
-                        >
-                          Disable
-                        </button>
-                      )}
-                      {decorator.status === 'disabled' && (
-                        <button
-                          className="btn-primary"
-                          onClick={() => handleApproveDecorator(decorator._id)}
-                        >
-                          Re-enable
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
         )}
 
         {/* Analytics Tab */}
