@@ -90,22 +90,23 @@ const DecoratorDashboardPage = () => {
     }
   };
 
-  const getStatusSteps = (currentStatus) => {
-    const steps = [
+  const getStatusSteps = () => {
+    // Return all status steps in order (always show all steps)
+    return [
       { value: 'assigned', label: 'Assigned' },
-      { value: 'planning', label: 'Planning Phase' },
+      { value: 'planning-phase', label: 'Planning Phase' },
       { value: 'materials-prepared', label: 'Materials Prepared' },
       { value: 'on-the-way', label: 'On the Way to Venue' },
       { value: 'setup-in-progress', label: 'Setup in Progress' },
       { value: 'completed', label: 'Completed' },
     ];
-    return steps;
   };
 
   const getNextStatus = (currentStatus) => {
     const statusFlow = {
-      'assigned': 'planning',
-      'planning': 'materials-prepared',
+      'assigned': 'planning-phase',
+      'planning': 'materials-prepared', // Support old format
+      'planning-phase': 'materials-prepared',
       'materials-prepared': 'on-the-way',
       'on-the-way': 'setup-in-progress',
       'setup-in-progress': 'completed',
@@ -229,12 +230,15 @@ const DecoratorDashboardPage = () => {
                   <div className="project-status-steps">
                     <h4 className="status-steps-title">Project Status</h4>
                     <div className="status-steps">
-                      {getStatusSteps(project.status).map((step, index) => {
-                        const isActive = step.value === project.status;
-                        const statusOrder = ['assigned', 'planning', 'materials-prepared', 'on-the-way', 'setup-in-progress', 'completed'];
-                        const currentIndex = statusOrder.indexOf(project.status);
-                        const stepIndex = statusOrder.indexOf(step.value);
-                        const isCompleted = stepIndex < currentIndex || (stepIndex === currentIndex && project.status === 'completed');
+                      {getStatusSteps().map((step, index) => {
+                        // Normalize status values for comparison (support both 'planning' and 'planning-phase')
+                        const normalizedStatus = project.status === 'planning' ? 'planning-phase' : project.status;
+                        const normalizedStepValue = step.value;
+                        const isActive = normalizedStepValue === normalizedStatus;
+                        const statusOrder = ['assigned', 'planning-phase', 'materials-prepared', 'on-the-way', 'setup-in-progress', 'completed'];
+                        const currentIndex = statusOrder.indexOf(normalizedStatus) !== -1 ? statusOrder.indexOf(normalizedStatus) : -1;
+                        const stepIndex = statusOrder.indexOf(normalizedStepValue);
+                        const isCompleted = stepIndex !== -1 && currentIndex !== -1 && (stepIndex < currentIndex || (stepIndex === currentIndex && project.status === 'completed'));
                         return (
                           <div
                             key={step.value}
@@ -257,9 +261,9 @@ const DecoratorDashboardPage = () => {
                         className="btn-primary"
                         onClick={() => handleStatusUpdate(project._id, getNextStatus(project.status))}
                       >
-                        {project.status === 'assigned' ? 'Start Planning' : 
-                       project.status === 'planning' ? 'Materials Prepared' :
-                       project.status === 'materials-prepared' ? 'On the Way' :
+                        {project.status === 'assigned' ? 'Start Planning Phase' : 
+                       (project.status === 'planning' || project.status === 'planning-phase') ? 'Materials Prepared' :
+                       project.status === 'materials-prepared' ? 'On the Way to Venue' :
                        project.status === 'on-the-way' ? 'Start Setup' :
                        project.status === 'setup-in-progress' ? 'Mark as Completed' : 'Next Step'}
                       </button>
