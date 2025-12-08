@@ -65,9 +65,41 @@ const AdminDashboardPage = () => {
     setLoading(true);
     try {
       if (activeTab === 'bookings') {
-        const response = await getAllBookings();
-        setBookings(response.data || []);
-        toast.success('Bookings loaded successfully');
+        // Load both bookings and decorators (needed for assignment)
+        try {
+          const [bookingsRes, decoratorsRes] = await Promise.all([
+            getAllBookings(),
+            getAllDecorators(),
+          ]);
+          setBookings(bookingsRes.data || []);
+          
+          // Parse decorators response
+          let decoratorsData = [];
+          if (Array.isArray(decoratorsRes)) {
+            decoratorsData = decoratorsRes;
+          } else if (decoratorsRes?.data) {
+            decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
+          } else if (decoratorsRes?.success && decoratorsRes?.data) {
+            decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
+          }
+          
+          console.log('Decorators loaded for bookings tab:', decoratorsData);
+          setDecorators(decoratorsData);
+          
+          toast.success(`Bookings loaded successfully. ${decoratorsData.length} decorators available.`);
+        } catch (err) {
+          console.error('Error loading bookings/decorators:', err);
+          // Still try to load bookings even if decorators fail
+          try {
+            const bookingsRes = await getAllBookings();
+            setBookings(bookingsRes.data || []);
+            toast.success('Bookings loaded successfully');
+          } catch (bookingErr) {
+            toast.error(bookingErr.message || 'Failed to load bookings');
+          }
+          setDecorators([]);
+          toast.error('Failed to load decorators: ' + (err.message || 'Unknown error'));
+        }
       } else if (activeTab === 'services') {
         const response = await getServices();
         setServices(response.data || []);
@@ -506,35 +538,44 @@ const AdminDashboardPage = () => {
                       )}
                       {selectedBooking === booking._id && (
                         <div className="assign-decorator-form">
-                          <select
-                            value={selectedDecoratorId}
-                            onChange={(e) => setSelectedDecoratorId(e.target.value)}
-                            className="form-select"
-                          >
-                            <option value="">Select Decorator</option>
-                            {decorators
-                              .filter(d => d.status === 'approved')
-                              .map(decorator => (
-                                <option key={decorator._id} value={decorator._id}>
-                                  {decorator.userId?.name || decorator.userId?.email || decorator._id}
-                                </option>
-                              ))}
-                          </select>
-                          <button
-                            className="btn-primary"
-                            onClick={() => handleAssignDecorator(booking._id)}
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            className="btn-outline"
-                            onClick={() => {
-                              setSelectedBooking(null);
-                              setSelectedDecoratorId('');
-                            }}
-                          >
-                            Cancel
-                          </button>
+                          {decorators.filter(d => d.status === 'approved').length === 0 ? (
+                            <div style={{ padding: '1rem', color: 'var(--gray-dark)', marginBottom: '1rem' }}>
+                              <p>No approved decorators available. Please approve decorators in the "Manage Decorators" tab first.</p>
+                            </div>
+                          ) : (
+                            <select
+                              value={selectedDecoratorId}
+                              onChange={(e) => setSelectedDecoratorId(e.target.value)}
+                              className="form-select"
+                            >
+                              <option value="">Select Decorator</option>
+                              {decorators
+                                .filter(d => d.status === 'approved')
+                                .map(decorator => (
+                                  <option key={decorator._id} value={decorator._id}>
+                                    {decorator.userId?.name || decorator.userId?.email || decorator._id}
+                                  </option>
+                                ))}
+                            </select>
+                          )}
+                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                            <button
+                              className="btn-primary"
+                              onClick={() => handleAssignDecorator(booking._id)}
+                              disabled={!selectedDecoratorId || decorators.filter(d => d.status === 'approved').length === 0}
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              className="btn-outline"
+                              onClick={() => {
+                                setSelectedBooking(null);
+                                setSelectedDecoratorId('');
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -915,6 +956,7 @@ const AdminDashboardPage = () => {
                 </div>
               )}
             </div>
+          </div>
         )}
 
         {/* Analytics Tab */}
