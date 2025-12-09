@@ -178,7 +178,18 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
     throw new Error(errorMessage);
   }
 
-  return response.json();
+  // Parse JSON response, handling empty responses
+  const text = await response.text();
+  if (!text || text.trim().length === 0) {
+    return { success: true };
+  }
+  try {
+    return JSON.parse(text);
+  } catch (parseError) {
+    console.error('Failed to parse response as JSON:', parseError);
+    console.error('Response text:', text);
+    throw new Error('Invalid response format from server');
+  }
 };
 
 // Public endpoints (no authentication required)
@@ -291,22 +302,16 @@ export const registerUser = async (name, role = 'user', image = null) => {
 // User endpoints
 export const getCurrentUser = async () => {
   try {
-    // Try to get user profile - the register endpoint returns existing user if already registered
-    // This is a workaround since there might not be a dedicated /users/me endpoint
     const user = auth.currentUser;
     if (!user) return null;
     
-    // We'll use the register endpoint which is idempotent and returns the user profile
-    // But first, let's try a direct profile endpoint if it exists
-    try {
-      return await apiRequest('/api/users/me');
-    } catch (error) {
-      // If /api/users/me doesn't exist, we'll need to get profile from registration response
-      // For now, return null and let the component handle it
-      console.log('User profile endpoint not available, will fetch from registration');
-      return null;
-    }
+    // Try to get user profile from /api/users/me endpoint
+    const response = await apiRequest('/api/users/me');
+    // Extract data if response has a data property, otherwise return the whole response
+    return response.data || response;
   } catch (error) {
+    // If /api/users/me doesn't exist or fails, return null
+    // Components should use registerUser instead to get/create the profile
     console.warn('Failed to get current user profile:', error.message);
     return null;
   }
