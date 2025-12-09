@@ -905,14 +905,20 @@
 .project-status-steps {
   margin-bottom: 1.5rem;
   padding: 1.5rem;
-  background: var(--gray-light);
+  background: linear-gradient(135deg, var(--gray-light) 0%, #f8f6f4 100%);
   border-radius: var(--radius-md);
+  border: 2px solid var(--beige);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .status-steps-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--burgundy-dark);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-steps {
@@ -960,23 +966,46 @@
   background: var(--burgundy);
   border-color: var(--burgundy);
   color: var(--white);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(139, 69, 85, 0.2);
 }
 
 .status-step.completed .status-step-circle {
   background: var(--magenta);
   border-color: var(--magenta);
   color: var(--white);
+  font-size: 1.2rem;
+}
+
+.status-step.pending .status-step-circle {
+  background: var(--white);
+  border-color: var(--beige);
+  color: var(--gray);
+  opacity: 0.7;
 }
 
 .status-step-label {
   font-size: 0.85rem;
   color: var(--gray-dark);
   font-weight: 500;
+  text-align: center;
+  max-width: 80px;
+  line-height: 1.2;
 }
 
 .status-step.active .status-step-label {
   color: var(--burgundy);
   font-weight: 600;
+}
+
+.status-step.pending .status-step-label {
+  color: var(--gray);
+  opacity: 0.6;
+}
+
+.status-step.completed .status-step-label {
+  color: var(--magenta);
+  font-weight: 500;
 }
 
 .project-actions {

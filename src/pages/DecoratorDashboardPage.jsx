@@ -102,16 +102,56 @@ const DecoratorDashboardPage = () => {
     ];
   };
 
-  const getNextStatus = (currentStatus) => {
-    const statusFlow = {
-      'assigned': 'planning-phase',
-      'planning': 'materials-prepared', // Support old format
-      'planning-phase': 'materials-prepared',
-      'materials-prepared': 'on-the-way',
-      'on-the-way': 'setup-in-progress',
+  // Map backend status to detailed flow step for display
+  // This allows us to show the detailed 6-step flow even though backend only has 3 statuses
+  const getDisplayStatus = (backendStatus) => {
+    const statusMap = {
+      'assigned': 'assigned',
+      'in-progress': 'setup-in-progress', // When in-progress, show "Setup in Progress" as active
+      'completed': 'completed',
+      // Support any custom statuses that might come from backend
+      'planning-phase': 'planning-phase',
+      'planning': 'planning-phase',
+      'materials-prepared': 'materials-prepared',
+      'on-the-way': 'on-the-way',
+      'setup-in-progress': 'setup-in-progress',
+    };
+    return statusMap[backendStatus] || backendStatus;
+  };
+
+  // Get which steps should be marked as completed based on current status
+  const getCompletedSteps = (backendStatus) => {
+    const displayStatus = getDisplayStatus(backendStatus);
+    const statusOrder = ['assigned', 'planning-phase', 'materials-prepared', 'on-the-way', 'setup-in-progress', 'completed'];
+    const currentIndex = statusOrder.indexOf(displayStatus);
+    
+    // If status is 'in-progress', mark all steps before 'setup-in-progress' as completed
+    if (backendStatus === 'in-progress') {
+      return statusOrder.slice(0, statusOrder.indexOf('setup-in-progress'));
+    }
+    
+    // Otherwise, mark all steps before current as completed
+    return currentIndex > 0 ? statusOrder.slice(0, currentIndex) : [];
+  };
+
+  // Get the next backend status to send
+  const getNextBackendStatus = (currentStatus) => {
+    // Map detailed flow statuses to backend statuses
+    if (currentStatus === 'assigned') {
+      return 'in-progress'; // Move from assigned to in-progress
+    } else if (currentStatus === 'in-progress') {
+      return 'completed'; // Move from in-progress to completed
+    } else if (currentStatus === 'completed') {
+      return null; // Already completed
+    }
+    // For any other status, try to map to next backend status
+    const detailedToBackend = {
+      'planning-phase': 'in-progress',
+      'materials-prepared': 'in-progress',
+      'on-the-way': 'in-progress',
       'setup-in-progress': 'completed',
     };
-    return statusFlow[currentStatus] || null;
+    return detailedToBackend[currentStatus] || 'in-progress';
   };
 
   if (loading) return <Loading />;
@@ -226,26 +266,30 @@ const DecoratorDashboardPage = () => {
                     </div>
                   </div>
 
-                  {/* Status Steps */}
+                  {/* Status Steps - On-Site Service Status Flow */}
                   <div className="project-status-steps">
-                    <h4 className="status-steps-title">Project Status</h4>
+                    <h4 className="status-steps-title">On-Site Service Status Flow</h4>
                     <div className="status-steps">
                       {getStatusSteps().map((step, index) => {
-                        // Normalize status values for comparison (support both 'planning' and 'planning-phase')
-                        const normalizedStatus = project.status === 'planning' ? 'planning-phase' : project.status;
-                        const normalizedStepValue = step.value;
-                        const isActive = normalizedStepValue === normalizedStatus;
+                        const displayStatus = getDisplayStatus(project.status);
+                        const completedSteps = getCompletedSteps(project.status);
                         const statusOrder = ['assigned', 'planning-phase', 'materials-prepared', 'on-the-way', 'setup-in-progress', 'completed'];
-                        const currentIndex = statusOrder.indexOf(normalizedStatus) !== -1 ? statusOrder.indexOf(normalizedStatus) : -1;
-                        const stepIndex = statusOrder.indexOf(normalizedStepValue);
-                        const isCompleted = stepIndex !== -1 && currentIndex !== -1 && (stepIndex < currentIndex || (stepIndex === currentIndex && project.status === 'completed'));
+                        const currentIndex = statusOrder.indexOf(displayStatus);
+                        const stepIndex = statusOrder.indexOf(step.value);
+                        
+                        // Determine if step is active, completed, or pending
+                        const isActive = step.value === displayStatus;
+                        const isCompleted = completedSteps.includes(step.value) || (stepIndex !== -1 && currentIndex !== -1 && stepIndex < currentIndex);
+                        const isPending = stepIndex !== -1 && currentIndex !== -1 && stepIndex > currentIndex && !isCompleted;
+                        
                         return (
                           <div
                             key={step.value}
-                            className={`status-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                            className={`status-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isPending ? 'pending' : ''}`}
+                            title={step.label}
                           >
                             <div className="status-step-circle">
-                              {isCompleted ? '✓' : index + 1}
+                              {isCompleted ? '✓' : isActive ? '●' : index + 1}
                             </div>
                             <span className="status-step-label">{step.label}</span>
                           </div>
@@ -256,20 +300,18 @@ const DecoratorDashboardPage = () => {
 
                   {/* Update Status Actions */}
                   <div className="project-actions">
-                    {getNextStatus(project.status) && (
+                    {project.status !== 'completed' && getNextBackendStatus(project.status) && (
                       <button
                         className="btn-primary"
-                        onClick={() => handleStatusUpdate(project._id, getNextStatus(project.status))}
+                        onClick={() => handleStatusUpdate(project._id, getNextBackendStatus(project.status))}
                       >
                         {project.status === 'assigned' ? 'Start Planning Phase' : 
-                       (project.status === 'planning' || project.status === 'planning-phase') ? 'Materials Prepared' :
-                       project.status === 'materials-prepared' ? 'On the Way to Venue' :
-                       project.status === 'on-the-way' ? 'Start Setup' :
-                       project.status === 'setup-in-progress' ? 'Mark as Completed' : 'Next Step'}
+                       project.status === 'in-progress' ? 'Mark as Completed' :
+                       'Next Step'}
                       </button>
                     )}
                     {project.status === 'completed' && (
-                      <span className="project-completed-badge">Project Completed</span>
+                      <span className="project-completed-badge">✓ Project Completed</span>
                     )}
                   </div>
 
