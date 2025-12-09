@@ -56,7 +56,7 @@ const apiRequest = async (endpoint, options = {}, retryCount = 0) => {
         errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
         error = { message: errorMessage };
       }
-    } catch (parseError) {
+    } catch {
       errorMessage = `HTTP ${response.status}: ${response.statusText}`;
       error = { message: errorMessage };
     }
