@@ -213,8 +213,11 @@ export const AuthProvider = ({ children }) => {
       const friendlyMessage = getFirebaseErrorMessage(error);
       // Show toast notification
       toast.error(friendlyMessage);
-      // Throw error with friendly message for component handling
-      throw new Error(friendlyMessage);
+      // Throw error silently (don't log to console)
+      // Create a new error without stack trace to prevent console logging
+      const silentError = new Error(friendlyMessage);
+      silentError.stack = undefined;
+      throw silentError;
     }
   };
 
@@ -259,8 +262,11 @@ export const AuthProvider = ({ children }) => {
       const friendlyMessage = getFirebaseErrorMessage(error);
       // Show toast notification
       toast.error(friendlyMessage);
-      // Throw error with friendly message for component handling
-      throw new Error(friendlyMessage);
+      // Throw error silently (don't log to console)
+      // Create a new error without stack trace to prevent console logging
+      const silentError = new Error(friendlyMessage);
+      silentError.stack = undefined;
+      throw silentError;
     }
   };
 
@@ -301,8 +307,11 @@ export const AuthProvider = ({ children }) => {
       const friendlyMessage = getFirebaseErrorMessage(error);
       // Show toast notification
       toast.error(friendlyMessage);
-      // Throw error with friendly message for component handling
-      throw new Error(friendlyMessage);
+      // Throw error silently (don't log to console)
+      // Create a new error without stack trace to prevent console logging
+      const silentError = new Error(friendlyMessage);
+      silentError.stack = undefined;
+      throw silentError;
     }
   };
 

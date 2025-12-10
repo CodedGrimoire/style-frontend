@@ -1,40 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
+// Helper function to get dashboard route based on role
+const getDashboardRoute = (userProfile) => {
+  if (!userProfile) return '/dashboard';
+  if (userProfile.role === 'admin') return '/admin';
+  if (userProfile.role === 'decorator') return '/decorator';
+  return '/dashboard';
+};
+
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { signUp, signInWithGoogle } = useAuth();
+  const { user, userProfile, signUp, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+
+  // Redirect to correct dashboard when userProfile is loaded after login
+  useEffect(() => {
+    if (justLoggedIn && user && userProfile) {
+      const dashboardRoute = getDashboardRoute(userProfile);
+      navigate(dashboardRoute, { replace: true });
+      setJustLoggedIn(false);
+    }
+  }, [user, userProfile, justLoggedIn, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (password !== confirmPassword) {
-      const errorMsg = 'Passwords do not match';
-      setError(errorMsg);
-      toast.error(errorMsg);
+      toast.error('Passwords do not match');
       return;
     }
 
     if (password.length < 6) {
-      const errorMsg = 'Password must be at least 6 characters';
-      setError(errorMsg);
-      toast.error(errorMsg);
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
     if (!name || name.trim().length === 0) {
-      const errorMsg = 'Name is required';
-      setError(errorMsg);
-      toast.error(errorMsg);
+      toast.error('Name is required');
       return;
     }
 
@@ -43,10 +55,12 @@ const RegisterPage = () => {
     try {
       await signUp(email, password, name || null);
       toast.success('Account created successfully!');
-      navigate('/dashboard');
+      setJustLoggedIn(true);
+      // Navigation will happen in useEffect when userProfile is loaded
     } catch (err) {
-      // Error toast is already shown in AuthContext, but keep error state for UI
-      setError(err.message || 'Failed to create account');
+      // Error toast is already shown in AuthContext, no need to display error again
+      // Silently catch to prevent console logging
+      setJustLoggedIn(false);
     } finally {
       setLoading(false);
     }
@@ -59,10 +73,12 @@ const RegisterPage = () => {
     try {
       await signInWithGoogle();
       toast.success('Signed up with Google successfully!');
-      navigate('/dashboard');
+      setJustLoggedIn(true);
+      // Navigation will happen in useEffect when userProfile is loaded
     } catch (err) {
-      // Error toast is already shown in AuthContext, but keep error state for UI
-      setError(err.message || 'Failed to sign in with Google');
+      // Error toast is already shown in AuthContext, no need to display error again
+      // Silently catch to prevent console logging
+      setJustLoggedIn(false);
     } finally {
       setLoading(false);
     }
@@ -84,18 +100,6 @@ const RegisterPage = () => {
         borderRadius: '8px'
       }}>
         <h1>Sign Up</h1>
-        
-        {error && (
-          <div style={{ 
-            color: 'red', 
-            marginBottom: '1rem',
-            padding: '0.5rem',
-            background: '#ffe6e6',
-            borderRadius: '4px'
-          }}>
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>

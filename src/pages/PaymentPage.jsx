@@ -102,7 +102,7 @@ const PaymentForm = ({ booking, onSuccess }) => {
 const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [booking, setBooking] = useState(location.state?.booking);
 
   useEffect(() => {
@@ -118,7 +118,10 @@ const PaymentPage = () => {
 
   const handleSuccess = () => {
     toast.success('Payment successful!');
-    navigate('/dashboard');
+    // Get correct dashboard route based on role
+    const dashboardRoute = userProfile?.role === 'admin' ? '/admin' : 
+                           userProfile?.role === 'decorator' ? '/decorator' : '/dashboard';
+    navigate(dashboardRoute);
   };
 
   if (!booking) return <Loading />;

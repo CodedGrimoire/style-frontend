@@ -11,7 +11,7 @@ import 'animate.css';
 const ServiceDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,7 +42,10 @@ const ServiceDetailsPage = () => {
   };
 
   const handleBookingSuccess = () => {
-    navigate('/dashboard');
+    // Get correct dashboard route based on role
+    const dashboardRoute = userProfile?.role === 'admin' ? '/admin' : 
+                           userProfile?.role === 'decorator' ? '/decorator' : '/dashboard';
+    navigate(dashboardRoute);
   };
 
   if (loading) return <Loading />;
