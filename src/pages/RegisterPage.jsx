@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -17,17 +18,23 @@ const RegisterPage = () => {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      const errorMsg = 'Passwords do not match';
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      const errorMsg = 'Password must be at least 6 characters';
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
     if (!name || name.trim().length === 0) {
-      setError('Name is required');
+      const errorMsg = 'Name is required';
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
@@ -35,8 +42,10 @@ const RegisterPage = () => {
 
     try {
       await signUp(email, password, name || null);
+      toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (err) {
+      // Error toast is already shown in AuthContext, but keep error state for UI
       setError(err.message || 'Failed to create account');
     } finally {
       setLoading(false);
@@ -49,8 +58,10 @@ const RegisterPage = () => {
 
     try {
       await signInWithGoogle();
+      toast.success('Signed up with Google successfully!');
       navigate('/dashboard');
     } catch (err) {
+      // Error toast is already shown in AuthContext, but keep error state for UI
       setError(err.message || 'Failed to sign in with Google');
     } finally {
       setLoading(false);

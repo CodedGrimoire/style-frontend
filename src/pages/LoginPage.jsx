@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,8 +18,10 @@ const LoginPage = () => {
 
     try {
       await signIn(email, password);
+      toast.success('Signed in successfully!');
       navigate('/dashboard');
     } catch (err) {
+      // Error toast is already shown in AuthContext, but keep error state for UI
       setError(err.message || 'Failed to sign in');
     } finally {
       setLoading(false);
@@ -31,8 +34,10 @@ const LoginPage = () => {
 
     try {
       await signInWithGoogle();
+      toast.success('Signed in with Google successfully!');
       navigate('/dashboard');
     } catch (err) {
+      // Error toast is already shown in AuthContext, but keep error state for UI
       setError(err.message || 'Failed to sign in with Google');
     } finally {
       setLoading(false);
