@@ -1,9 +1,16 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+
 import '../styles/pages.css';
+
+
+import toast from 'react-hot-toast';
+
+
 import 'animate.css';
 
-const ContactPage = () => {
+const ContactPage = () => 
+  
+  {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,19 +19,28 @@ const ContactPage = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
+    
+    
+    {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => 
+    
+    
+    {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+   
+    setTimeout(() => 
+      
+      
+      {
       toast.success('Thank you for your message! We will get back to you soon.');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setLoading(false);
@@ -35,97 +51,328 @@ const ContactPage = () => {
     <div className="page-container">
       <div className="container">
         <div className="section animate__animated animate__fadeInUp">
-          <h1 style={{ 
-            textAlign: 'center', 
+          <h1 style={
+            
+            
+            { 
+          
             marginBottom: '2rem',
+
+
+               textAlign: 'center', 
             color: 'var(--burgundy-dark)'
           }}>
+
             Contact Us
           </h1>
           
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '2rem',
-            maxWidth: '1000px',
+           
+            maxWidth: '990px',
+
+             gap: '2rem',
             margin: '0 auto'
           }}>
-            {/* Contact Information */}
+      
+
+
+
             <div className="card">
-              <h2 style={{ color: 'var(--burgundy)', marginBottom: '1.5rem' }}>
+              <h2 style={
+                
+                
+                
+                { 
+                  
+                  
+                  
+                  color: 'var(--burgundy)', 
+                  
+                  
+                  
+                  marginBottom: '1.5rem'
+                  
+                  
+                  
+                  }
+                  
+                  
+                  
+                  }>
                 Get in Touch
               </h2>
               
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ 
+              <div 
+              
+              
+              
+              style={
+                
+                
+                { marginBottom: '1.5rem' }
+                
+                
+                }>
+                <div style={
+                  
+                  
+                  
+                  { 
+
+                     alignItems: 'center',
                   display: 'flex', 
-                  alignItems: 'center',
+                 
                   marginBottom: '1rem'
                 }}>
-                  <i className="fa-solid fa-envelope" style={{ 
+                  <i className="fa-solid fa-envelope" 
+                  
+                  
+                  style={
+                    
+                    { 
                     color: 'var(--magenta)', 
-                    fontSize: '1.25rem',
+                   
                     marginRight: '1rem',
+
+
+                     fontSize: '1.25rem',
                     width: '24px'
-                  }}></i>
+                  }
+                  
+                  
+                  
+                  }></i>
                   <div>
-                    <strong style={{ color: 'var(--burgundy-dark)' }}>Email</strong>
-                    <p style={{ margin: '0.25rem 0', color: 'var(--gray-dark)' }}>
+                    <strong style={
+                      
+                      
+                      { 
+                        
+                        
+                        
+                        color: 'var(--burgundy-dark)' }
+                        
+                        
+                        }>
+                          
+                          
+                          
+                          
+                          Email
+                          
+                          
+                          </strong>
+
+
+                    <p 
+                    
+                    
+                    style={
+                      
+                      
+                      { margin: '0.25rem 0',
+                      
+                      
+                      color: 'var(--gray-dark)' 
+                      
+                      
+                      
+                      }
+                      
+                      
+                      }>
                       info@styledecor.com
                     </p>
                   </div>
                 </div>
                 
-                <div style={{ 
+                <div style={
+                  
+                  
+                  { 
                   display: 'flex', 
                   alignItems: 'center',
                   marginBottom: '1rem'
-                }}>
-                  <i className="fa-solid fa-phone" style={{ 
+                }
+                
+                }>
+                  <i className="fa-solid fa-phone" 
+                  
+                  
+                  
+                  style={
+                    
+                    
+                    { 
                     color: 'var(--magenta)', 
-                    fontSize: '1.25rem',
+                   
                     marginRight: '1rem',
+
+
+                      fontSize: '1.25rem',
                     width: '24px'
-                  }}></i>
+                  }}>
+
+
+
+
+
+                  </i>
                   <div>
-                    <strong style={{ color: 'var(--burgundy-dark)' }}>Phone</strong>
-                    <p style={{ margin: '0.25rem 0', color: 'var(--gray-dark)' }}>
+
+
+                    <strong
+                    
+                    
+                    style={
+                      
+                      
+                      { color: 'var(--burgundy-dark)'
+
+
+
+                       }
+                       
+                       
+                       }>
+                        
+                        
+                        Phone
+                        
+                        
+                        
+                        </strong>
+                    <p
+                    
+                    
+                    style=
+                    
+                    
+                    {
+                      
+                      
+                      { margin: '0.25rem 0', 
+                      
+                      
+                      color: 'var(--gray-dark)' 
+                      
+                      
+                      }}
+                      
+                      >
                       +880 1234 567890
                     </p>
                   </div>
                 </div>
                 
-                <div style={{ 
+                <div style={
+                  
+                  
+                  { 
+
+                     alignItems: 'flex-start',
                   display: 'flex', 
-                  alignItems: 'flex-start',
+                 
                   marginBottom: '1rem'
-                }}>
-                  <i className="fa-solid fa-location-dot" style={{ 
+                }
+                
+                
+                }>
+                  <i className="fa-solid fa-location-dot"
+                  
+                  
+                  style={
+                    
+                    { 
                     color: 'var(--magenta)', 
                     fontSize: '1.25rem',
-                    marginRight: '1rem',
+                   
                     width: '24px',
-                    marginTop: '0.25rem'
-                  }}></i>
+
+                     marginRight: '1rem',
+                    marginTop: '0.35rem'
+                  }}>
+
+
+
+
+
+                  </i>
                   <div>
-                    <strong style={{ color: 'var(--burgundy-dark)' }}>Address</strong>
-                    <p style={{ margin: '0.25rem 0', color: 'var(--gray-dark)' }}>
+                    <strong 
+                    
+                    
+                    style={
+                      
+                      
+                      
+                      
+                      { color: 'var(--burgundy-dark)' 
+
+
+
+                      }}>
+                        
+                        
+                        
+                        
+                        Address
+                        
+                        
+                        </strong>
+
+
+
+                    <p
+                    
+                    
+                    style={
+                      
+                      
+                      { margin: '0.25rem 0', 
+                      
+                      
+                      
+                      color: 'var(--gray-dark)'
+                      
+                      
+                      }}>
                       Dhaka, Sylhet, Chittagong, Rajshahi<br />
                       Bangladesh
                     </p>
                   </div>
                 </div>
+
+
               </div>
               
-              <div style={{ 
+              <div style={
+                
+                
+                { 
                 marginTop: '2rem',
-                padding: '1rem',
+               
                 background: 'var(--gray-light)',
+
+                  padding: '1rem',
                 borderRadius: 'var(--radius-md)'
-              }}>
-                <p style={{ 
-                  margin: 0, 
+              }
+              
+              }>
+                <p
+                
+                
+                style={
+                  
+                  
+                  { 
+                 
                   fontSize: '0.9rem',
+
+
+                   margin: 0, 
                   color: 'var(--gray-dark)'
                 }}>
                   <strong>Business Hours:</strong><br />
@@ -136,18 +383,60 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Contact Form */}
+           
             <div className="card">
-              <h2 style={{ color: 'var(--burgundy)', marginBottom: '1.5rem' }}>
+              <h2 
+              
+              
+              style={
+                
+                
+                { color: 'var(--burgundy)', 
+                
+                
+                marginBottom: '1.5rem' }
+                
+                
+                
+                
+                }>
                 Send us a Message
               </h2>
               
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <form
+              
+              
+              onSubmit={handleSubmit} 
+              
+              
+              style={{ 
+                
+                
+                display: 'flex', 
+                
+                
+                
+                flexDirection: 'column', 
+                
+                
+                
+                gap: '1rem' 
+                
+                
+                }}>
                 <div>
-                  <label style={{ 
+                  <label 
+                  
+                  
+                  style={
+                    
+                    { 
                     display: 'block',
-                    marginBottom: '0.5rem',
+                   
                     color: 'var(--burgundy-dark)',
+
+
+                      marginBottom: '0.5rem',
                     fontWeight: '500'
                   }}>
                     Name *
@@ -165,8 +454,11 @@ const ContactPage = () => {
                 <div>
                   <label style={{ 
                     display: 'block',
-                    marginBottom: '0.5rem',
+                   
                     color: 'var(--burgundy-dark)',
+
+
+                      marginBottom: '0.5rem',
                     fontWeight: '500'
                   }}>
                     Email *
