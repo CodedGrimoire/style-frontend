@@ -2,7 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/components.css';
 import 'animate.css';
 
-const Error = ({ message = 'Something went wrong!', statusCode = null }) => {
+const Error = ({ message = 'Something went wrong!', statusCode = null }) => 
+  
+  {
   const navigate = useNavigate();
 
   return (
@@ -11,8 +13,16 @@ const Error = ({ message = 'Something went wrong!', statusCode = null }) => {
         {statusCode && (
           <h1 className="error-status-code">{statusCode}</h1>
         )}
-        <h1 className="error-title">Oops!</h1>
-        <p className="error-message">{message}</p>
+        <h1 className="error-title">
+          
+          
+          Oops!</h1>
+        <p className="error-message">
+          
+          {message}
+
+
+        </p>
         <div className="error-actions">
           <button className="btn-primary" onClick={() => navigate('/')}>
             Go to Home

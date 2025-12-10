@@ -1,26 +1,46 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+
+import LoginPage from './pages/LoginPage';
+
 import { AuthProvider } from './context/AuthContext';
+
+import ServiceDetailsPage from './pages/ServiceDetailsPage';
+
+ import ContactPage from './pages/ContactPage';
+
+
+import BookingPage from './pages/BookingPage';
+
+
 import Navbar from './components/Navbar';
+
+import DecoratorDashboardPage from './pages/DecoratorDashboardPage';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+
+
+import UserDashboardPage from './pages/UserDashboardPage';
+
+
 import Loading from './components/Loading';
 import Error from './components/Error';
 import AuthErrorBanner from './components/AuthErrorBanner';
 
-// Pages
+
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
-import ServiceDetailsPage from './pages/ServiceDetailsPage';
-import BookingPage from './pages/BookingPage';
+
 import PaymentPage from './pages/PaymentPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import UserDashboardPage from './pages/UserDashboardPage';
+
+
+
 import AdminDashboardPage from './pages/AdminDashboardPage';
-import DecoratorDashboardPage from './pages/DecoratorDashboardPage';
+
 import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
+
+import RegisterPage from './pages/RegisterPage';
+
 
 import './App.css';
 
@@ -31,30 +51,51 @@ function App() {
         <div>
           <Toaster
             position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
+            toastOptions={
+              
+              {
+              duration: 3000,
+              style: 
+              {
+                background: '#2b2a2aff',
+                color: 'white',
               },
-              success: {
+              success: 
+              
+              {
                 duration: 3000,
-                iconTheme: {
+                iconTheme:
+                
+                {
                   primary: '#4ade80',
-                  secondary: '#fff',
+                  secondary: 'white',
                 },
               },
               error: {
-                duration: 4000,
-                iconTheme: {
+                duration: 3000,
+
+                iconTheme: 
+                
+                {
                   primary: '#ef4444',
-                  secondary: '#fff',
+                  secondary: 'white',
                 },
               },
+
             }}
           />
           <Navbar />
-          <div style={{ paddingTop: '80px', minHeight: 'calc(100vh - 80px)' }}>
+          <div style={
+            
+            
+            { paddingTop: '80px',
+            
+            minHeight: 'calc(100vh - 80px)' 
+            
+            
+            }}>
+
+
             <AuthErrorBanner />
             <Routes>
             <Route path="/" element={<HomePage />} />
@@ -109,6 +150,8 @@ function App() {
             </Routes>
           </div>
           <Footer />
+
+          
         </div>
       </Router>
     </AuthProvider>

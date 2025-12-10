@@ -5,7 +5,7 @@ const AnimatedPage = ({ children, className = '' }) => {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Trigger animation on mount
+    
     setTimeout(() => setAnimate(true), 100);
   }, []);
 

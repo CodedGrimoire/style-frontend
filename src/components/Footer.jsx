@@ -1,15 +1,28 @@
 import { Link } from 'react-router-dom';
+
+
 import '../styles/footer.css';
 
 const Footer = () => {
   return (
     <footer className="footer">
       <div className="container">
+
+
+
         <div className="footer-content">
-          {/* Company Info */}
+         
           <div className="footer-section">
-            <h3 className="footer-title">StyleDecor</h3>
+            <h3 className="footer-title">
+              
+              
+              StyleDecor
+              
+              
+              </h3>
             <p className="footer-description">
+
+
               Transforming spaces with professional decoration services. 
               Your vision, our expertise.
             </p>
@@ -61,63 +74,136 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          
           <div className="footer-section">
-            <h4 className="footer-heading">Quick Links</h4>
+            <h4 className="footer-heading">
+              
+              
+              Quick Links
+              
+              </h4>
             <ul className="footer-links">
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/services">Services</Link></li>
-              <li><Link to="/about">About Us</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
+              <li><Link to="/">Home
+              </Link></li>
+              <li><Link to="/services">Services</Link>
+              
+              
+              </li>
+              <li><Link to="/about">
+              
+              About Us
+              
+              
+              </Link>
+              
+              </li>
+              <li>
+                <Link to="/contact">
+              
+              Contact</Link>
+              </li>
             </ul>
           </div>
 
-          {/* Contact Details */}
+         
           <div className="footer-section">
-            <h4 className="footer-heading">Contact Us</h4>
+            <h4 className="footer-heading">
+              
+              Contact Us
+              
+              </h4>
             <ul className="footer-contact">
               <li>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
-                <span>123 Design Street, Style City, SC 12345</span>
+                <span>
+                  
+                  
+                  123 Dhaka City, SC 12345
+                  </span>
               </li>
+
+
+
               <li>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                 </svg>
-                <span>+1 (555) 123-4567</span>
+                <span>
+                  
+                  +1 (555) 123-4567
+                  
+                  
+                  </span>
               </li>
               <li>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <span>info@styledecor.com</span>
+                <span>
+                  
+                  
+                  info@styledecor.com
+                  
+                  
+                  </span>
               </li>
             </ul>
           </div>
 
-          {/* Business Hours */}
+          
           <div className="footer-section">
-            <h4 className="footer-heading">Business Hours</h4>
+            <h4 className="footer-heading">
+              
+              
+              Business Hours
+              
+              </h4>
             <ul className="footer-hours">
               <li>
-                <span className="day">Monday - Friday</span>
-                <span className="time">9:00 AM - 6:00 PM</span>
+                <span className="day">
+                  
+                  Monday - Friday
+                  
+                  </span>
+                <span className="time">
+                  
+                  9:00 AM - 6:00 PM
+                  
+                  </span>
               </li>
               <li>
-                <span className="day">Saturday</span>
-                <span className="time">10:00 AM - 4:00 PM</span>
+                <span className="day">
+                  
+                  Saturday
+                  
+                  </span>
+                <span className="time">
+                  
+                  10:00 AM - 4:00 PM
+                  
+                  
+                  </span>
               </li>
               <li>
-                <span className="day">Sunday</span>
-                <span className="time">Closed</span>
+                <span className="day">
+                  
+                  Sunday
+                  
+                  </span>
+                <span className="time">
+                  
+                  Closed
+                  
+                  
+                  </span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Copyright */}
+       
         <div className="footer-bottom">
           <p className="footer-copyright">
             &copy; {new Date().getFullYear()} StyleDecor. All rights reserved.
