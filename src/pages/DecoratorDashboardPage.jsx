@@ -22,6 +22,13 @@ const DecoratorDashboardPage = () => {
       return;
     }
 
+    // Reset all state when user changes to prevent showing previous user's data
+    setProjects([]);
+    setEarnings(0);
+    setTodaySchedule([]);
+    setError(null);
+    setLoading(true);
+
     const fetchProjects = async () => {
       try {
         const response = await getDecoratorProjects();

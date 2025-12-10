@@ -35,6 +35,13 @@ export const AuthProvider = ({ children }) => {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         setUser(currentUser);
         
+        // Clear userProfile when user logs out
+        if (!currentUser) {
+          setUserProfile(null);
+          setLoading(false);
+          return;
+        }
+        
         // If user is logged in, try to ensure their profile exists in backend
         if (currentUser) {
           try {
@@ -246,6 +253,8 @@ export const AuthProvider = ({ children }) => {
     if (!auth) {
       return;
     }
+    // Clear userProfile before signing out to prevent stale data
+    setUserProfile(null);
     await firebaseSignOut(auth);
   };
 

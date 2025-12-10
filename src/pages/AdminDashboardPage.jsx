@@ -58,6 +58,33 @@ const AdminDashboardPage = () => {
       navigate('/login');
       return;
     }
+
+    // Reset all state when user changes to prevent showing previous user's data
+    setBookings([]);
+    setServices([]);
+    setDecorators([]);
+    setUsers([]);
+    setAnalytics(null);
+    setSearchTerm('');
+    setServiceSearchTerm('');
+    setDecoratorSearchTerm('');
+    setSortBy('date');
+    setSortOrder('desc');
+    setCurrentPage(1);
+    setSelectedBooking(null);
+    setSelectedDecoratorId('');
+    setSelectedUserId('');
+    setDecoratorSpecialties([]);
+    setEditingService(null);
+    setServiceForm({
+      service_name: '',
+      cost: '',
+      unit: 'per hour',
+      category: 'interior',
+      description: '',
+      image: '',
+    });
+
     loadData();
   }, [user, navigate, activeTab]);
 

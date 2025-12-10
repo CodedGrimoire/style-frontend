@@ -31,6 +31,15 @@ const UserDashboardPage = () => {
       return;
     }
 
+    // Reset all state when user changes to prevent showing previous user's data
+    setBookings([]);
+    setError(null);
+    setSearchTerm('');
+    setSortBy('date');
+    setSortOrder('desc');
+    setCurrentPage(1);
+    setLoading(true);
+
     setProfileData({
       name: user?.displayName || '',
       email: user?.email || '',
