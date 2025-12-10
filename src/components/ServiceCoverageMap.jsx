@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import '../styles/map.css';
 
-// Fix for default marker icon in react-leaflet
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -12,12 +12,17 @@ L.Icon.Default.mergeOptions({
 });
 
 const ServiceCoverageMap = () => {
-  // Center on Bangladesh (near Dhaka)
-  const center = [23.8103, 90.4125]; // Dhaka, Bangladesh coordinates
-  const zoom = 7; // Zoom level to show all major cities
 
-  // Service coverage locations in Bangladesh
-  const locations = [
+  const center = [23.8103, 90.4125]; 
+
+
+  const zoom = 7; 
+
+  
+  const locations = 
+  
+  
+  [
     { position: [23.8103, 90.4125], name: 'Dhaka', description: 'Full service coverage - Capital city' },
     { position: [24.8949, 91.8687], name: 'Sylhet', description: 'All decoration services available' },
     { position: [22.3569, 91.7832], name: 'Chittagong', description: 'Premium services available' },
@@ -29,18 +34,31 @@ const ServiceCoverageMap = () => {
       <MapContainer
         center={center}
         zoom={zoom}
-        style={{ height: '400px', width: '100%', borderRadius: 'var(--radius-lg)' }}
+        style={{ height: '400px',
+          
+          width: '100%',
+          
+          
+          borderRadius: 'var(--radius-lg)' }}
         scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {locations.map((location, index) => (
+        {locations.map((location, index) => 
+        
+        
+        (
           <Marker key={index} position={location.position}>
             <Popup>
               <div>
-                <strong>{location.name}</strong>
+                <strong>
+                  
+                  {location.name}
+                  
+                  
+                  </strong>
                 <br />
                 {location.description}
               </div>

@@ -5,42 +5,61 @@ import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, userProfile, signOut } = useAuth();
-  const navigate = useNavigate();
+  
   const location = useLocation();
-  const [showDropdown, setShowDropdown] = useState(false);
+  
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  // Get the correct dashboard route based on user role
+  const [showDropdown, setShowDropdown] = useState(false);
+
+
+  const navigate = useNavigate();
+
+  
   const getDashboardRoute = () => {
-    if (!userProfile) return '/dashboard'; // Default to user dashboard if profile not loaded
+    if (!userProfile) return '/dashboard';
+
     if (userProfile.role === 'admin') return '/admin';
     if (userProfile.role === 'decorator') return '/decorator';
-    return '/dashboard'; // Default to user dashboard
+    return '/dashboard'; 
   };
   
-  // Check if a link is active
-  const isActive = (path) => {
-    if (path === '/') {
+  
+  const isActive = (path) => 
+    
+    
+    {
+    if (path === '/') 
+      
+      {
       return location.pathname === '/';
     }
     return location.pathname.startsWith(path);
   };
   
-  // Check if dashboard is active
-  const isDashboardActive = () => {
+  
+  const isDashboardActive = () => 
+    
+    
+    {
     return location.pathname === '/admin' || 
            location.pathname === '/decorator' || 
            location.pathname === '/dashboard';
   };
 
-  const handleSignOut = async () => {
+  const handleSignOut = async () => 
+    
+    
+    {
     await signOut();
     navigate('/');
     setShowDropdown(false);
     setShowMobileMenu(false);
   };
 
-  const handleDashboardClick = (e) => {
+  const handleDashboardClick = (e) => 
+    
+    {
     e.preventDefault();
     navigate(getDashboardRoute());
     setShowDropdown(false);
@@ -49,20 +68,27 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      {/* Logo & Brand Name */}
-      <Link to="/" className="navbar-brand">
+     
+      <Link to="/" 
+      
+      
+      className="navbar-brand">
         <img 
           src="/logo.jpeg" 
-          alt="StyleDecor Logo" 
+
+
+          alt="" 
           className="navbar-logo"
-          onError={(e) => {
+          onError={(e) => 
+            
+            {
             e.target.style.display = 'none';
           }}
         />
         <span className="navbar-brand-text">StyleDecor</span>
       </Link>
 
-      {/* Desktop Navigation Menu */}
+     
       <div className="navbar-menu">
         <Link to="/" className={`navbar-link ${isActive('/') ? 'active' : ''}`}>Home</Link>
         <Link to="/services" className={`navbar-link ${isActive('/services') ? 'active' : ''}`}>Services</Link>
@@ -70,7 +96,7 @@ const Navbar = () => {
         <Link to="/contact" className={`navbar-link ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
       </div>
 
-      {/* Desktop Dashboard & Profile */}
+     
       <div className="navbar-actions">
         {user ? (
           <>
@@ -86,7 +112,7 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <span>{user.displayName || user.email?.split('@')[0] || 'Profile'}</span>
-                <span className="dropdown-arrow">▼</span>
+              
               </button>
               
               {showDropdown && (
@@ -97,12 +123,25 @@ const Navbar = () => {
                   />
                   <div className="dropdown-menu">
                     <div className="dropdown-header">
-                      <div className="dropdown-name">{user.displayName || 'User'}</div>
+
+
+                      <div className="dropdown-name">
+                        
+                        
+                        {user.displayName || 'User'}
+                        
+                        
+                        </div>
                       <div className="dropdown-email">{user.email}</div>
                       <div className="dropdown-role" style={{ 
-                        marginTop: '0.5rem', 
+                       
                         fontSize: '0.85rem', 
-                        color: '#666',
+
+                        color: '#5a5a5aff',
+
+
+                         marginTop: '0.5rem', 
+
                         fontWeight: 'bold'
                       }}>
                         Role: {userProfile?.role || 'Not loaded'}
@@ -110,6 +149,8 @@ const Navbar = () => {
                     </div>
                     <button
                       onClick={handleDashboardClick}
+
+
                       className="dropdown-item"
                     >
                       Dashboard
@@ -129,6 +170,8 @@ const Navbar = () => {
           <div className="navbar-dropdown">
             <button
               className="navbar-login-btn"
+
+
               onClick={() => setShowDropdown(!showDropdown)}
             >
               Login <span className="dropdown-arrow">▼</span>
@@ -162,7 +205,7 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Mobile Menu Button */}
+     
       <button
         className="navbar-mobile-toggle"
         onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -175,7 +218,7 @@ const Navbar = () => {
         </span>
       </button>
 
-      {/* Mobile Menu */}
+     
       {showMobileMenu && (
         <>
           <div
