@@ -1,20 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, userProfile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-    setShowDropdown(false);
-    setShowMobileMenu(false);
-  };
 
   // Get the correct dashboard route based on user role
   const getDashboardRoute = () => {
@@ -22,6 +16,28 @@ const Navbar = () => {
     if (userProfile.role === 'admin') return '/admin';
     if (userProfile.role === 'decorator') return '/decorator';
     return '/dashboard'; // Default to user dashboard
+  };
+  
+  // Check if a link is active
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+  
+  // Check if dashboard is active
+  const isDashboardActive = () => {
+    return location.pathname === '/admin' || 
+           location.pathname === '/decorator' || 
+           location.pathname === '/dashboard';
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+    setShowDropdown(false);
+    setShowMobileMenu(false);
   };
 
   const handleDashboardClick = (e) => {
@@ -48,10 +64,10 @@ const Navbar = () => {
 
       {/* Desktop Navigation Menu */}
       <div className="navbar-menu">
-        <Link to="/" className="navbar-link">Home</Link>
-        <Link to="/services" className="navbar-link">Services</Link>
-        <Link to="/about" className="navbar-link">About</Link>
-        <Link to="/contact" className="navbar-link">Contact</Link>
+        <Link to="/" className={`navbar-link ${isActive('/') ? 'active' : ''}`}>Home</Link>
+        <Link to="/services" className={`navbar-link ${isActive('/services') ? 'active' : ''}`}>Services</Link>
+        <Link to="/about" className={`navbar-link ${isActive('/about') ? 'active' : ''}`}>About</Link>
+        <Link to="/contact" className={`navbar-link ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
       </div>
 
       {/* Desktop Dashboard & Profile */}
@@ -60,7 +76,7 @@ const Navbar = () => {
           <>
             <button 
               onClick={handleDashboardClick}
-              className="navbar-dashboard-btn"
+              className={`navbar-dashboard-btn ${isDashboardActive() ? 'active' : ''}`}
             >
               Dashboard
             </button>
@@ -169,28 +185,28 @@ const Navbar = () => {
           <div className="mobile-menu">
             <Link
               to="/"
-              className="mobile-menu-link"
+              className={`mobile-menu-link ${isActive('/') ? 'active' : ''}`}
               onClick={() => setShowMobileMenu(false)}
             >
               Home
             </Link>
             <Link
               to="/services"
-              className="mobile-menu-link"
+              className={`mobile-menu-link ${isActive('/services') ? 'active' : ''}`}
               onClick={() => setShowMobileMenu(false)}
             >
               Services
             </Link>
             <Link
               to="/about"
-              className="mobile-menu-link"
+              className={`mobile-menu-link ${isActive('/about') ? 'active' : ''}`}
               onClick={() => setShowMobileMenu(false)}
             >
               About
             </Link>
             <Link
               to="/contact"
-              className="mobile-menu-link"
+              className={`mobile-menu-link ${isActive('/contact') ? 'active' : ''}`}
               onClick={() => setShowMobileMenu(false)}
             >
               Contact
@@ -199,7 +215,7 @@ const Navbar = () => {
               <>
                 <button
                   onClick={handleDashboardClick}
-                  className="mobile-menu-link"
+                  className={`mobile-menu-link ${isDashboardActive() ? 'active' : ''}`}
                   style={{ 
                     background: 'none', 
                     border: 'none', 

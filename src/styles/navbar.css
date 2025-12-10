@@ -75,6 +75,14 @@
   width: 100%;
 }
 
+.navbar-link.active {
+  color: var(--burgundy);
+}
+
+.navbar-link.active::after {
+  width: 100%;
+}
+
 .navbar-actions {
   display: flex;
   align-items: center;
@@ -95,6 +103,12 @@
   background: var(--burgundy);
   color: var(--white);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-dashboard-btn.active {
+  background: var(--burgundy);
+  color: var(--white);
   box-shadow: var(--shadow-sm);
 }
 
@@ -293,6 +307,14 @@
   color: var(--burgundy);
   padding-left: 2.5rem;
   border-left: 4px solid var(--burgundy);
+}
+
+.mobile-menu-link.active {
+  background: var(--cream);
+  color: var(--burgundy);
+  padding-left: 2.5rem;
+  border-left: 4px solid var(--burgundy);
+  font-weight: 600;
 }
 
 .mobile-menu-link-primary {

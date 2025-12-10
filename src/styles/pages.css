@@ -6,10 +6,18 @@
 
 /* Hero Section */
 .hero-section {
-  background: url('/style.jpeg') center center / cover no-repeat;
+  background: url('/style2.jpg') center center / cover no-repeat;
   padding: 6rem 0;
   position: relative;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .hero-section::before {
@@ -19,7 +27,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
   z-index: 0;
 }
 
@@ -27,8 +35,9 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 525px;
+  width: 75%;
+  margin: -3.5rem auto 0;
   background: var(--white);
   padding: 3rem 2.5rem;
   border-radius: var(--radius-xl);
