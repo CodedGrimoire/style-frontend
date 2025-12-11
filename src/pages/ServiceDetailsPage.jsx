@@ -1,31 +1,58 @@
 import { useEffect, useState } from 'react';
+
+import 'animate.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getServiceById } from '../services/api';
+
+import BookingModal from '../components/BookingModal';
+
+ import { getServiceById } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
-import Error from '../components/Error';
-import BookingModal from '../components/BookingModal';
+
 import '../styles/pages.css';
-import 'animate.css';
+
+
+import Error from '../components/Error';
+
 
 const ServiceDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
-  const [service, setService] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showBookingModal, setShowBookingModal] = useState(false);
+ 
   const [animate, setAnimate] = useState(false);
 
+   const { user, userProfile } = useAuth();
+  const [service, setService] = useState(null);
+
+  const [showBookingModal, setShowBookingModal] = useState(false);
+
+
+    const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    const fetchService = async () => {
-      try {
+    const fetchService = async () => 
+      
+      
+      {
+      try 
+      
+      {
         const response = await getServiceById(id);
         setService(response.data);
-      } catch (err) {
+      } 
+      catch (err) 
+      
+      
+      {
         setError(err.message);
-      } finally {
+      } 
+      
+      
+      finally 
+      
+      
+      {
         setLoading(false);
         setTimeout(() => setAnimate(true), 100);
       }
@@ -33,52 +60,106 @@ const ServiceDetailsPage = () => {
     fetchService();
   }, [id]);
 
-  const handleBookNow = () => {
-    if (!user) {
+  const handleBookNow = () => 
+    
+    
+    {
+    if (!user) 
+      {
       navigate('/login', { state: { from: `/service/${id}` } });
       return;
     }
     setShowBookingModal(true);
   };
 
-  const handleBookingSuccess = () => {
-    // Get correct dashboard route based on role
+  const handleBookingSuccess = () => 
+    
+    
+    {
+    
     const dashboardRoute = userProfile?.role === 'admin' ? '/admin' : 
                            userProfile?.role === 'decorator' ? '/decorator' : '/dashboard';
     navigate(dashboardRoute);
   };
 
-  if (loading) return <Loading />;
-  if (error) return <Error message={error} />;
-  if (!service) return <Error message="Service not found" />;
+  if (loading) 
+    
+    return <Loading />;
+  if (error) 
+    
+    return <Error message={error} />;
+  if (!service) 
+    
+    return <Error message="Service not found" />;
 
   return (
-    <div className="page-container">
-      <section className="section">
+    <div 
+    
+    className="page-container">
+      <section
+      
+      className="section">
         <div className="container">
-          <div className={`service-details ${animate ? 'animate__animated animate__fadeInUp' : ''}`}>
+          <div 
+          
+          className={`service-details ${animate ? 'animate__animated animate__fadeInUp' : ''}`}>
             {service.image && (
-              <div className="service-details-image">
+              <div 
+              
+              className="service-details-image">
                 <img 
                   src={service.image} 
-                  alt={service.service_name}
+                  alt=""
                 />
               </div>
             )}
 
-            <div className="service-details-content">
-              <h1 className="service-details-title">{service.service_name}</h1>
+            <div 
+            
+            
+            className="service-details-content">
+              <h1 
               
-              <div className="service-details-meta">
-                <span className="service-details-category">{service.category}</span>
-                <div className="service-details-price">
+              
+              className="service-details-title">
+                
+                
+                {service.service_name}
+                
+                </h1>
+              
+              <div 
+              
+              
+              className="service-details-meta">
+                <span 
+                
+                
+                className="service-details-category">
+                  
+                  
+                  {service.category}
+                  
+                  
+                  </span>
+                <div
+                
+                className="service-details-price">
                   ${service.cost} <span>{service.unit}</span>
                 </div>
               </div>
 
               <div className="service-details-description">
-                <h3>Description</h3>
-                <p>{service.description}</p>
+                <h3>
+                  
+                  Description
+                  
+                  </h3>
+                <p>
+                  
+                  {service.description}
+                  
+                  </p>
               </div>
 
               <div className="service-details-actions">
@@ -91,7 +172,12 @@ const ServiceDetailsPage = () => {
                   </button>
                 ) : (
                   <div className="service-login-prompt">
-                    <p>Please log in to book this service</p>
+                    <p>
+                      
+                      
+                      Please log in to book this service
+                      
+                      </p>
                     <button 
                       onClick={() => navigate('/login', { state: { from: `/service/${id}` } })}
                       className="btn-primary"

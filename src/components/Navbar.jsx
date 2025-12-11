@@ -174,7 +174,7 @@ const Navbar = () => {
 
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              Login <span className="dropdown-arrow">▼</span>
+              Login 
             </button>
             
             {showDropdown && (

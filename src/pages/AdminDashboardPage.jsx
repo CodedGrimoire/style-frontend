@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../context/AuthContext';
 import {
   getAllBookings,
@@ -18,9 +18,14 @@ import {
   getMyBookings,
   cancelBooking,
 } from '../services/api';
-import Loading from '../components/Loading';
+
 import toast from 'react-hot-toast';
 import '../styles/dashboard.css';
+
+import { useNavigate } from 'react-router-dom';
+
+
+import Loading from '../components/Loading';
 import 'animate.css';
 
 const ITEMS_PER_PAGE = 5;
@@ -28,13 +33,17 @@ const ITEMS_PER_PAGE = 5;
 const AdminDashboardPage = () => {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
+  
+  const [loading, setLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
-  const [decorators, setDecorators] = useState([]);
+ 
   const [users, setUsers] = useState([]);
   const [analytics, setAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+   const [decorators, setDecorators] = useState([]);
   const [serviceForm, setServiceForm] = useState({
     service_name: '',
     cost: '',
@@ -46,32 +55,38 @@ const AdminDashboardPage = () => {
   const [editingService, setEditingService] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedDecoratorId, setSelectedDecoratorId] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState('');
-  const [decoratorSpecialties, setDecoratorSpecialties] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('date'); // 'date' or 'status'
-  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
-  const [currentPage, setCurrentPage] = useState(1);
-  const [serviceSearchTerm, setServiceSearchTerm] = useState('');
+  
   const [decoratorSearchTerm, setDecoratorSearchTerm] = useState('');
-  // User dashboard state
+  
   const [myBookings, setMyBookings] = useState([]);
   const [myBookingsSearchTerm, setMyBookingsSearchTerm] = useState('');
   const [myBookingsSortBy, setMyBookingsSortBy] = useState('date');
   const [myBookingsSortOrder, setMyBookingsSortOrder] = useState('desc');
+
+   const [serviceSearchTerm, setServiceSearchTerm] = useState('');
   const [myBookingsCurrentPage, setMyBookingsCurrentPage] = useState(1);
+
+
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [decoratorSpecialties, setDecoratorSpecialties] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date'); 
+   const [sortOrder, setSortOrder] = useState('desc'); 
+  const [currentPage, setCurrentPage] = useState(1);
   const [profileData, setProfileData] = useState({
     name: user?.displayName || '',
     email: user?.email || '',
   });
 
-  useEffect(() => {
+  useEffect(() => 
+    
+    {
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Reset all state when user changes to prevent showing previous user's data
+  
     setBookings([]);
     setServices([]);
     setDecorators([]);
@@ -110,25 +125,47 @@ const AdminDashboardPage = () => {
     loadData();
   }, [user, navigate, activeTab]);
 
-  const loadData = async () => {
+  const loadData = async () => 
+    
+    {
     setLoading(true);
-    try {
-      if (activeTab === 'bookings') {
-        // Load both bookings and decorators (needed for assignment)
-        try {
+    try
+    
+    {
+      if (activeTab === 'bookings')
+        
+        
+        {
+        
+        try 
+        
+        
+        {
           const [bookingsRes, decoratorsRes] = await Promise.all([
             getAllBookings(),
             getAllDecorators(),
           ]);
           setBookings(bookingsRes.data || []);
           
-          // Parse decorators response
+         
           let decoratorsData = [];
-          if (Array.isArray(decoratorsRes)) {
+          if (Array.isArray(decoratorsRes)) 
+            
+            
+            {
             decoratorsData = decoratorsRes;
-          } else if (decoratorsRes?.data) {
+          } 
+          
+          
+          else if (decoratorsRes?.data) {
             decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
-          } else if (decoratorsRes?.success && decoratorsRes?.data) {
+          } 
+          
+          
+          else if (decoratorsRes?.success && decoratorsRes?.data) 
+            
+            
+            {
             decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
           }
           
@@ -136,25 +173,54 @@ const AdminDashboardPage = () => {
           setDecorators(decoratorsData);
           
           toast.success(`Bookings loaded successfully. ${decoratorsData.length} decorators available.`);
-        } catch (err) {
+        }
+        
+        
+        catch (err) 
+        
+        {
           console.error('Error loading bookings/decorators:', err);
-          // Still try to load bookings even if decorators fail
-          try {
+          
+          try 
+          
+          {
             const bookingsRes = await getAllBookings();
             setBookings(bookingsRes.data || []);
             toast.success('Bookings loaded successfully');
-          } catch (bookingErr) {
+          } 
+          
+          catch (bookingErr)
+          
+          
+          
+          {
             toast.error(bookingErr.message || 'Failed to load bookings');
           }
           setDecorators([]);
           toast.error('Failed to load decorators: ' + (err.message || 'Unknown error'));
         }
-      } else if (activeTab === 'services') {
+      }
+      
+      else if (activeTab === 'services')
+        
+        
+        {
         const response = await getServices();
         setServices(response.data || []);
         toast.success('Services loaded successfully');
-      } else if (activeTab === 'decorators') {
-        try {
+      } 
+      
+      
+      
+      
+      else if (activeTab === 'decorators')
+        
+        
+        {
+        try 
+        
+        
+        {
           const [decoratorsRes, usersRes] = await Promise.all([
             getAllDecorators(),
             getAllUsers(),
@@ -162,22 +228,48 @@ const AdminDashboardPage = () => {
           console.log('Decorators response:', decoratorsRes);
           console.log('Users response:', usersRes);
           
-          // Handle different response formats
+         
           let decoratorsData = [];
-          if (Array.isArray(decoratorsRes)) {
+          if (Array.isArray(decoratorsRes)) 
+            
+            
+            {
             decoratorsData = decoratorsRes;
-          } else if (decoratorsRes?.data) {
+          } 
+          
+          
+          else if (decoratorsRes?.data) 
+            
+            {
             decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
-          } else if (decoratorsRes?.success && decoratorsRes?.data) {
+          } 
+          
+          else if (decoratorsRes?.success && decoratorsRes?.data)
+            
+            
+            {
             decoratorsData = Array.isArray(decoratorsRes.data) ? decoratorsRes.data : [];
           }
           
           let usersData = [];
-          if (Array.isArray(usersRes)) {
+          if (Array.isArray(usersRes)) 
+            
+            {
             usersData = usersRes;
-          } else if (usersRes?.data) {
+          } 
+          
+          
+          else if (usersRes?.data)
+            
+            {
             usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
-          } else if (usersRes?.success && usersRes?.data) {
+          } 
+          
+          
+          else if (usersRes?.success && usersRes?.data)
+            
+            
+            {
             usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
           }
           
@@ -186,52 +278,94 @@ const AdminDashboardPage = () => {
           
           setDecorators(decoratorsData);
           setUsers(usersData);
-          if (decoratorsData.length > 0 || usersData.length > 0) {
+          if (decoratorsData.length > 0 || usersData.length > 0) 
+            
+            {
             toast.success(`Loaded ${decoratorsData.length} decorators and ${usersData.length} users`);
-          } else {
+          } 
+          
+          else
+            
+            {
             toast.info('No decorators or users found');
           }
-        } catch (err) {
+        }
+        
+        catch (err) 
+        
+        
+        {
           console.error('Error loading decorators/users:', err);
           setDecorators([]);
           setUsers([]);
           toast.error(err.message || 'Failed to load decorators/users');
         }
-      } else if (activeTab === 'analytics') {
+      }
+      
+      
+      else if (activeTab === 'analytics') {
         const [revenue, demand] = await Promise.all([
           getRevenueAnalytics(),
           getServiceDemandAnalytics(),
         ]);
         setAnalytics({ revenue: revenue.data, demand: demand.data });
         toast.success('Analytics loaded successfully');
-      } else if (activeTab === 'my-bookings' || activeTab === 'payments') {
-        // Load user's own bookings for "My Bookings" and "Payment History" tabs
-        try {
+      } 
+      
+      
+      else if (activeTab === 'my-bookings' || activeTab === 'payments') {
+       
+        try 
+        
+        {
           const response = await getMyBookings();
           setMyBookings(response.data || []);
           toast.success('Bookings loaded successfully');
-        } catch (err) {
+        }
+        
+        catch (err) 
+        
+        {
           toast.error(err.message || 'Failed to load bookings');
           setMyBookings([]);
         }
-      } else if (activeTab === 'profile') {
-        // Profile tab doesn't need data loading, just set profile data
+      } 
+      
+      
+      else if (activeTab === 'profile') {
+       
         setProfileData({
           name: user?.displayName || '',
           email: user?.email || '',
         });
       }
-    } catch (err) {
+    } 
+    
+    
+    catch (err) 
+    
+    
+    {
       console.error('Error loading data:', err);
       toast.error(err.message || 'Failed to load data');
-    } finally {
+    } 
+    
+    finally 
+    
+    
+    {
       setLoading(false);
     }
   };
 
-  const handleCreateService = async (e) => {
+  const handleCreateService = async (e) => 
+    
+    {
     e.preventDefault();
-    try {
+    try 
+    
+    
+    {
       await createService({
         ...serviceForm,
         cost: parseFloat(serviceForm.cost),
@@ -247,14 +381,25 @@ const AdminDashboardPage = () => {
       });
       loadData();
       toast.success('Service created successfully');
-    } catch (err) {
+    } 
+    
+    
+    catch (err) 
+    
+    
+    {
       toast.error(err.message || 'Failed to create service');
     }
   };
 
-  const handleUpdateService = async (e) => {
+  const handleUpdateService = async (e) =>
+    
+    
+    {
     e.preventDefault();
-    try {
+    try 
+    
+    {
       await updateService(editingService._id, {
         ...serviceForm,
         cost: parseFloat(serviceForm.cost),
@@ -270,54 +415,104 @@ const AdminDashboardPage = () => {
       });
       loadData();
       toast.success('Service updated successfully');
-    } catch (err) {
+
+    } 
+    
+    
+    catch (err) 
+    
+    {
       toast.error(err.message || 'Failed to update service');
     }
   };
 
-  const handleDeleteService = async (id) => {
+  const handleDeleteService = async (id) =>
+    
+    {
     if (!window.confirm('Are you sure you want to delete this service?')) {
       return;
     }
-    try {
+    try
+    
+    
+    {
       const loadingToast = toast.loading('Deleting service...');
       await deleteService(id);
       loadData();
       toast.success('Service deleted successfully', { id: loadingToast });
-    } catch (err) {
+    } 
+    
+    
+    catch (err) 
+    
+    {
       toast.error(err.message || 'Failed to delete service');
     }
   };
 
-  const handleAssignDecorator = async (bookingId) => {
-    if (!selectedDecoratorId) {
+  const handleAssignDecorator = async (bookingId) => 
+    
+    
+    {
+    if (!selectedDecoratorId)
+      
+      
+      {
       toast.error('Please select a decorator');
       return;
     }
     const loadingToast = toast.loading('Assigning decorator...');
-    try {
+    try 
+    
+    
+    
+    
+    {
       await assignDecorator(bookingId, selectedDecoratorId);
       setSelectedBooking(null);
       setSelectedDecoratorId('');
       loadData();
       toast.success('Decorator assigned successfully', { id: loadingToast });
-    } catch (err) {
+    } 
+    
+    
+    
+    catch (err) 
+    
+    
+    {
       toast.error(err.message || 'Failed to assign decorator', { id: loadingToast });
     }
   };
 
-  const handleMakeDecorator = async () => {
-    if (!selectedUserId) {
+  const handleMakeDecorator = async () =>
+    
+    
+    {
+    if (!selectedUserId) 
+      
+      
+      {
       toast.error('Please select a user');
       return;
     }
-    if (decoratorSpecialties.length === 0) {
+    if (decoratorSpecialties.length === 0) 
+      
+      
+      {
       toast.error('Please add at least one specialty');
       return;
     }
     const loadingToast = toast.loading('Converting user to decorator...');
-    try {
-      console.log('Making user decorator:', { 
+    try 
+    
+    
+    
+    {
+      console.log('Making user decorator:',
+        
+        
+        { 
         userId: selectedUserId, 
         specialties: decoratorSpecialties,
         specialtiesType: typeof decoratorSpecialties,
@@ -327,11 +522,11 @@ const AdminDashboardPage = () => {
       const response = await makeUserDecorator(selectedUserId, decoratorSpecialties);
       console.log('Make decorator response:', response);
       
-      // Clear form
+     
       setSelectedUserId('');
       setDecoratorSpecialties([]);
       
-      // Reload data to refresh users and decorators lists
+      
       await loadData();
       
       toast.success('User converted to decorator successfully. They will appear in the decorators list with "pending" status.', { id: loadingToast, duration: 5000 });
@@ -344,39 +539,68 @@ const AdminDashboardPage = () => {
         specialties: decoratorSpecialties
       });
       
-      // Show more detailed error message
+     
       const errorMessage = err.message || 'Failed to convert user';
       toast.error(`Error: ${errorMessage}`, { id: loadingToast, duration: 6000 });
     }
   };
 
-  const handleApproveDecorator = async (decoratorId) => {
+  const handleApproveDecorator = async (decoratorId) => 
+    {
     const loadingToast = toast.loading('Approving decorator...');
-    try {
+    try 
+    
+    
+    {
       await approveDecorator(decoratorId);
       loadData();
       toast.success('Decorator approved successfully', { id: loadingToast });
-    } catch (err) {
+    }
+    
+    catch (err)
+    
+    
+    {
       toast.error(err.message || 'Failed to approve decorator', { id: loadingToast });
     }
   };
 
-  const handleDisableDecorator = async (decoratorId) => {
-    if (!window.confirm('Are you sure you want to disable this decorator?')) {
+  const handleDisableDecorator = async (decoratorId) => 
+    
+    
+    {
+    if (!window.confirm('Are you sure you want to disable this decorator?')) 
+      
+      
+      
+      {
       return;
     }
     const loadingToast = toast.loading('Disabling decorator...');
-    try {
+    try 
+    
+    
+    {
       await disableDecorator(decoratorId);
       loadData();
       toast.success('Decorator disabled successfully', { id: loadingToast });
-    } catch (err) {
+    } 
+    
+    
+    catch (err)
+    
+    
+    {
       toast.error(err.message || 'Failed to disable decorator', { id: loadingToast });
     }
   };
 
   // Filter and sort bookings
-  const filteredAndSortedBookings = useMemo(() => {
+  const filteredAndSortedBookings = useMemo(() => 
+    
+    
+    
+    {
     let filtered = [...bookings];
 
     // Search filter
@@ -389,7 +613,7 @@ const AdminDashboardPage = () => {
       );
     }
 
-    // Sort
+    
     filtered.sort((a, b) => {
       if (sortBy === 'date') {
         const dateA = new Date(a.date);
@@ -410,14 +634,14 @@ const AdminDashboardPage = () => {
     return filtered;
   }, [bookings, searchTerm, sortBy, sortOrder]);
 
-  // Pagination for bookings
+  
   const totalPages = Math.ceil(filteredAndSortedBookings.length / ITEMS_PER_PAGE);
   const paginatedBookings = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredAndSortedBookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredAndSortedBookings, currentPage]);
 
-  // Filter services
+  
   const filteredServices = useMemo(() => {
     if (!serviceSearchTerm) return services;
     return services.filter(service =>
@@ -427,8 +651,11 @@ const AdminDashboardPage = () => {
     );
   }, [services, serviceSearchTerm]);
 
-  // Filter decorators
-  const filteredDecorators = useMemo(() => {
+  
+  const filteredDecorators = useMemo(() => 
+    
+    
+    {
     if (!decoratorSearchTerm) return decorators;
     return decorators.filter(decorator =>
       decorator.userId?.name?.toLowerCase().includes(decoratorSearchTerm.toLowerCase()) ||
@@ -437,7 +664,9 @@ const AdminDashboardPage = () => {
     );
   }, [decorators, decoratorSearchTerm]);
 
-  const getServiceDemandChart = () => {
+  const getServiceDemandChart = () => 
+    
+    {
     if (!analytics?.demand?.serviceDemand) return null;
     
     const maxBookings = Math.max(
@@ -447,12 +676,24 @@ const AdminDashboardPage = () => {
 
     return (
       <div className="chart-container">
-        <h3 className="chart-title">Service Demand (Number of Bookings)</h3>
+
+
+        <h3 className="chart-title">
+          
+          
+          Service Demand (Number of Bookings)
+          
+          
+          
+          </h3>
         <div className="histogram">
           {analytics.demand.serviceDemand.map((service, index) => {
             const height = ((service.bookingCount || 0) / maxBookings) * 100;
             return (
-              <div key={service._id || index} className="histogram-bar-container">
+              <div key={service._id || index} 
+              
+              
+              className="histogram-bar-container">
                 <div
                   className="histogram-bar"
                   style={{ height: `${height}%` }}
@@ -477,8 +718,20 @@ const AdminDashboardPage = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1 className="dashboard-title">Admin Dashboard</h1>
-        <p className="dashboard-subtitle">Manage services, decorators, bookings, and analytics</p>
+        <h1 className="dashboard-title">
+          
+          
+          
+          Admin Dashboard
+          
+          </h1>
+        <p className="dashboard-subtitle">
+          
+          
+          Manage services, decorators, bookings, and analytics
+          
+          
+          </p>
       </div>
 
       <div className="dashboard-tabs">
@@ -496,6 +749,8 @@ const AdminDashboardPage = () => {
         </button>
         <button
           className={`dashboard-tab ${activeTab === 'payments' ? 'active' : ''}`}
+
+
           onClick={() => setActiveTab('payments')}
         >
           Payment History
@@ -527,10 +782,21 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="dashboard-content">
-        {/* My Profile Tab */}
+      
         {activeTab === 'profile' && (
-          <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">Profile Information</h2>
+          <div 
+          
+          
+          className="dashboard-section animate__animated animate__fadeInUp">
+            <h2
+            
+            className="section-heading">
+              
+              
+              Profile Information
+              
+              
+              </h2>
             <div className="profile-card">
               <div className="profile-avatar">
                 {user?.photoURL ? (
@@ -542,8 +808,17 @@ const AdminDashboardPage = () => {
                 )}
               </div>
               <div className="profile-info">
-                <div className="form-group">
-                  <label className="form-label">Name</label>
+                <div 
+                
+                
+                className="form-group">
+                  <label className="form-label">
+                    
+                    
+                    Name
+                    
+                    
+                    </label>
                   <input
                     type="text"
                     value={profileData.name}
@@ -564,20 +839,45 @@ const AdminDashboardPage = () => {
                 </div>
                 <div className="profile-stats">
                   <div className="stat-item">
-                    <span className="stat-value">{myBookings.length}</span>
-                    <span className="stat-label">Total Bookings</span>
+                    <span 
+                    
+                    className="stat-value">
+                      
+                      
+                      {myBookings.length}
+                      
+                      
+                      </span>
+                    <span className="stat-label">
+                      Total Bookings
+                      
+                      
+                      
+                      
+                      </span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">
                       {myBookings.filter(b => b.paymentStatus === 'paid').length}
                     </span>
-                    <span className="stat-label">Paid</span>
+                    <span className="stat-label">
+                      
+                      
+                      Paid
+                      
+                      
+                      </span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">
                       {myBookings.filter(b => new Date(b.date) >= new Date() && b.status !== 'cancelled').length}
                     </span>
-                    <span className="stat-label">Upcoming</span>
+                    <span className="stat-label">
+                      
+                      Upcoming
+                      
+                      
+                      </span>
                   </div>
                 </div>
               </div>
@@ -585,7 +885,7 @@ const AdminDashboardPage = () => {
           </div>
         )}
 
-        {/* My Bookings Tab */}
+       
         {activeTab === 'my-bookings' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
             <h2 className="section-heading">My Bookings</h2>
@@ -594,7 +894,7 @@ const AdminDashboardPage = () => {
               <Loading />
             ) : (
               <>
-                {/* Search and Sort Controls */}
+               
                 {myBookings.length > 0 && (
                   <div className="bookings-controls">
                     <div className="search-container">
@@ -618,12 +918,26 @@ const AdminDashboardPage = () => {
                         }}
                         className="form-select"
                       >
-                        <option value="date">Sort by Date</option>
-                        <option value="status">Sort by Status</option>
+                        <option value="date">
+                          
+                          
+                          Sort by Date
+                          
+                          
+                          
+                          </option>
+                        <option value="status">
+                          
+                          Sort by Status
+                          
+                          </option>
                       </select>
                       <button
                         className="btn-outline sort-order-btn"
-                        onClick={() => {
+                        onClick={() =>
+                          
+                          
+                          {
                           setMyBookingsSortOrder(myBookingsSortOrder === 'asc' ? 'desc' : 'asc');
                           setMyBookingsCurrentPage(1);
                         }}
@@ -637,13 +951,19 @@ const AdminDashboardPage = () => {
 
                 {myBookings.length === 0 ? (
                   <div className="empty-state">
-                    <p>No bookings found.</p>
+                    <p>
+                      
+                      No bookings found.
+                      
+                      
+                      
+                      </p>
                     <button className="btn-primary" onClick={() => navigate('/services')}>
                       Browse Services
                     </button>
                   </div>
                 ) : (() => {
-                  // Filter and sort bookings
+                 
                   let filtered = [...myBookings];
                   if (myBookingsSearchTerm) {
                     filtered = filtered.filter(booking =>
@@ -660,9 +980,17 @@ const AdminDashboardPage = () => {
                     } else if (myBookingsSortBy === 'status') {
                       const statusA = a.status || '';
                       const statusB = b.status || '';
-                      if (myBookingsSortOrder === 'asc') {
+                      if (myBookingsSortOrder === 'asc') 
+                        
+                        
+                        {
                         return statusA.localeCompare(statusB);
-                      } else {
+                      } 
+                      
+                      
+                      else 
+                        
+                        {
                         return statusB.localeCompare(statusA);
                       }
                     }
@@ -674,7 +1002,15 @@ const AdminDashboardPage = () => {
 
                   return filtered.length === 0 ? (
                     <div className="empty-state">
-                      <p>No bookings match your search criteria.</p>
+                      <p>
+                        
+                        
+                        No bookings match your search criteria.
+                        
+                        
+                        
+                        
+                        </p>
                       <button className="btn-outline" onClick={() => setMyBookingsSearchTerm('')}>
                         Clear Search
                       </button>
@@ -685,38 +1021,88 @@ const AdminDashboardPage = () => {
                         {paginatedBookings.map((booking) => (
                           <div key={booking._id} className="booking-card">
                             <div className="booking-header">
-                              <h3 className="booking-service-name">{booking.serviceId?.service_name}</h3>
+                              <h3 className="booking-service-name">
+                                
+                                
+                                {booking.serviceId?.service_name}
+                                
+                                
+                                
+                                </h3>
                               <span className={`status-badge status-${booking.status}`}>
                                 {booking.status}
                               </span>
                             </div>
                             <div className="booking-details">
-                              <div className="booking-detail-item">
-                                <span className="detail-label">Date & Time:</span>
+                              <div 
+                              
+                              
+                              className="booking-detail-item">
+                                <span className="detail-label">
+                                  
+                                  
+                                  
+                                  Date & Time:
+                                  
+                                  
+                                  </span>
                                 <span className="detail-value">
                                   {new Date(booking.date).toLocaleString()}
                                 </span>
                               </div>
                               <div className="booking-detail-item">
-                                <span className="detail-label">Location:</span>
-                                <span className="detail-value">{booking.location}</span>
+                                <span className="detail-label">
+                                  
+                                  Location:
+                                  
+                                  
+                                  </span>
+                                <span className="detail-value">
+                                  
+                                  
+                                  {booking.location}
+                                  
+                                  </span>
                               </div>
-                              <div className="booking-detail-item">
-                                <span className="detail-label">Amount:</span>
+                              <div 
+                              
+                              className="booking-detail-item">
+                                <span className="detail-label">
+                                  Amount:
+                                  
+                                  </span>
                                 <span className="detail-value">
                                   ${booking.serviceId?.cost} {booking.serviceId?.unit}
                                 </span>
                               </div>
                               <div className="booking-detail-item">
-                                <span className="detail-label">Payment:</span>
-                                <span className={`payment-badge payment-${booking.paymentStatus}`}>
+                                <span className="detail-label">
+                                  
+                                  Payment:
+                                  
+                                  
+                                  </span>
+                                <span
+                                
+                                
+                                className={`payment-badge payment-${booking.paymentStatus}`}>
                                   {booking.paymentStatus}
                                 </span>
                               </div>
                               {booking.decoratorId && (
                                 <div className="booking-detail-item">
-                                  <span className="detail-label">Decorator:</span>
-                                  <span className="detail-value">Assigned</span>
+                                  <span 
+                                  
+                                  
+                                  className="detail-label">
+                                    
+                                    
+                                    Decorator:
+                                    </span>
+                                  <span className="detail-value">
+                                    
+                                    Assigned
+                                    </span>
                                 </div>
                               )}
                             </div>
@@ -732,16 +1118,28 @@ const AdminDashboardPage = () => {
                               {(booking.status === 'pending' || booking.status === 'confirmed') && (
                                 <button
                                   className="btn-outline btn-danger"
-                                  onClick={async () => {
+                                  onClick={async () =>
+                                    
+                                    
+                                    {
                                     if (!window.confirm('Are you sure you want to cancel this booking?')) {
                                       return;
                                     }
                                     const loadingToast = toast.loading('Cancelling booking...');
-                                    try {
+                                    try 
+                                    
+                                    
+                                    {
                                       await cancelBooking(booking._id);
                                       setMyBookings(myBookings.filter(b => b._id !== booking._id));
                                       toast.success('Booking cancelled successfully', { id: loadingToast });
-                                    } catch (err) {
+                                    } 
+                                    
+                                    
+                                    catch (err)
+                                    
+                                    
+                                    {
                                       toast.error(err.message || 'Failed to cancel booking', { id: loadingToast });
                                     }
                                   }}
@@ -754,9 +1152,11 @@ const AdminDashboardPage = () => {
                         ))}
                       </div>
 
-                      {/* Pagination */}
+                     
                       {totalPages > 1 && (
-                        <div className="pagination">
+                        <div 
+                        
+                        className="pagination">
                           <button
                             className="btn-outline"
                             onClick={() => setMyBookingsCurrentPage(prev => Math.max(1, prev - 1))}
@@ -764,7 +1164,10 @@ const AdminDashboardPage = () => {
                           >
                             Previous
                           </button>
-                          <span className="pagination-info">
+                          <span 
+                          
+                          
+                          className="pagination-info">
                             Page {myBookingsCurrentPage} of {totalPages} ({filtered.length} bookings)
                           </span>
                           <button
@@ -784,54 +1187,119 @@ const AdminDashboardPage = () => {
           </div>
         )}
 
-        {/* Payment History Tab */}
+        
         {activeTab === 'payments' && (
-          <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">Payment History</h2>
+          <div 
+          
+          className="dashboard-section animate__animated animate__fadeInUp">
+            <h2
+            
+            className="section-heading">
+              
+              Payment History
+              
+              
+              </h2>
             {loading ? (
               <Loading />
             ) : (() => {
               const paymentHistory = myBookings.filter(b => b.paymentStatus === 'paid');
               return paymentHistory.length === 0 ? (
-                <div className="empty-state">
-                  <p>No payment history available.</p>
+                <div
+                
+                className="empty-state">
+                  <p>
+                    
+                    No payment history available.
+                    
+                    
+                    </p>
                 </div>
               ) : (
                 <div className="payments-list">
                   {paymentHistory.map((booking) => (
                     <div key={booking._id} className="payment-card">
-                      <div className="payment-header">
+                      <div 
+                      
+                      className="payment-header">
                         <div>
-                          <h3 className="payment-service">{booking.serviceId?.service_name}</h3>
-                          <p className="payment-date">
+                          <h3 
+                          
+                          className="payment-service">
+                            
+                            
+                            {booking.serviceId?.service_name}
+                            
+                            </h3>
+                          <p
+                          
+                          className="payment-date">
                             Paid on {new Date(booking.updatedAt || booking.date).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="payment-amount">
+                        <div
+                        
+                        className="payment-amount">
                           ${booking.serviceId?.cost}
                         </div>
                       </div>
-                      <div className="payment-details">
-                        <div className="payment-detail-row">
-                          <span>Booking Date:</span>
+                      <div
+                      
+                      className="payment-details">
+                        <div
+                        
+                        className="payment-detail-row">
+                          <span>
+                            
+                            
+                            Booking Date:
+                            
+                            
+                            </span>
                           <span>{new Date(booking.date).toLocaleString()}</span>
                         </div>
-                        <div className="payment-detail-row">
-                          <span>Location:</span>
-                          <span>{booking.location}</span>
+                        <div 
+                        
+                        className="payment-detail-row">
+                          <span>
+                            
+                            Location:
+                            
+                            </span>
+                          <span>
+                            
+                            {booking.location}
+                            
+                            </span>
                         </div>
                         <div className="payment-detail-row">
-                          <span>Status:</span>
-                          <span className={`status-badge status-${booking.status}`}>
+                          <span>
+                            
+                            Status:
+                            
+                            
+                            </span>
+                          <span 
+                          
+                          
+                          className={`status-badge status-${booking.status}`}>
                             {booking.status}
                           </span>
+
+
+
                         </div>
                       </div>
-                      <div className="payment-receipt">
+                      <div 
+                      
+                      className="payment-receipt">
                         <button
                           className="btn-outline"
                           onClick={() => {
-                            const receipt = {
+                            const receipt = 
+                            
+                            
+                            {
                               service: booking.serviceId?.service_name,
                               amount: `$${booking.serviceId?.cost} ${booking.serviceId?.unit}`,
                               date: new Date(booking.date).toLocaleString(),
@@ -847,45 +1315,81 @@ const AdminDashboardPage = () => {
                         >
                           View Receipt
                         </button>
+
+
+
                       </div>
                     </div>
                   ))}
                 </div>
               );
+
+
+
             })()}
           </div>
         )}
 
-        {/* Bookings Tab */}
+     
         {activeTab === 'bookings' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">All Bookings</h2>
+            <h2 className="section-heading">
+              
+              
+              All Bookings
+              
+              
+              </h2>
             
-            {/* Search and Sort Controls */}
+            
             {bookings.length > 0 && (
-              <div className="bookings-controls">
-                <div className="search-container">
+              <div
+              
+              
+              className="bookings-controls">
+                <div 
+                
+                
+                
+                className="search-container">
                   <input
                     type="text"
                     placeholder="Search by service, user, location, or status..."
                     value={searchTerm}
-                    onChange={(e) => {
+                    onChange={(e) => 
+                      
+                      
+                      
+                      
+                      {
                       setSearchTerm(e.target.value);
                       setCurrentPage(1);
                     }}
                     className="form-input search-input"
                   />
                 </div>
-                <div className="sort-container">
+                <div 
+                
+                
+                
+                
+                className="sort-container">
                   <select
                     value={sortBy}
-                    onChange={(e) => {
+                    onChange={(e) => 
+                      
+                      
+                      
+                      {
                       setSortBy(e.target.value);
                       setCurrentPage(1);
                     }}
                     className="form-select"
                   >
                     <option value="date">Sort by Date</option>
+
+
+
                     <option value="status">Sort by Status</option>
                   </select>
                   <button
@@ -927,20 +1431,42 @@ const AdminDashboardPage = () => {
                       </span>
                     </div>
                     <div className="booking-details">
+
+
+
                       <div className="booking-detail-item">
-                        <span className="detail-label">User:</span>
+                        <span className="detail-label">
+                          
+                          
+                          
+                          
+                          User:
+                          
+                          </span>
                         <span className="detail-value">
                           {booking.userId?.email || booking.userId || 'Unknown'}
                         </span>
                       </div>
                       <div className="booking-detail-item">
-                        <span className="detail-label">Date:</span>
+                        <span className="detail-label">
+                          
+                          
+                          Date:
+                          
+                          
+                          </span>
                         <span className="detail-value">
                           {new Date(booking.date).toLocaleString()}
                         </span>
                       </div>
                       <div className="booking-detail-item">
-                        <span className="detail-label">Location:</span>
+                        <span className="detail-label">
+                          
+                          
+                          Location:
+                          
+                          
+                          </span>
                         <span className="detail-value">{booking.location}</span>
                       </div>
                       <div className="booking-detail-item">
