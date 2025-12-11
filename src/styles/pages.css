@@ -237,29 +237,37 @@
 
 .services-filters {
   background: var(--white);
-  padding: 2rem;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+ 
+ 
   margin-bottom: 2rem;
+
+   padding: 2rem;
+  border-radius: var(--radius-lg);
 }
 
 .filter-group {
   display: flex;
+
+   gap: 0.5rem;
   flex-direction: column;
-  gap: 0.5rem;
+ 
 }
 
 .filter-label {
   font-weight: 600;
-  color: var(--gray-dark);
+ 
   font-size: 0.9rem;
+
+   color: var(--gray-dark);
 }
 
 .filter-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+ 
   margin-top: 1rem;
+
+   gap: 1rem;
 }
 
 

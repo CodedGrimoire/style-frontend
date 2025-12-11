@@ -17,8 +17,8 @@ const UserDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('date'); // 'date' or 'status'
-  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' or 'desc'
+  const [sortBy, setSortBy] = useState('date'); 
+  const [sortOrder, setSortOrder] = useState('desc'); 
   const [currentPage, setCurrentPage] = useState(1);
   const [profileData, setProfileData] = useState({
     name: user?.displayName || '',

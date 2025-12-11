@@ -1,28 +1,38 @@
 /* Leaflet Map Styles */
 .coverage-map-container {
   width: 100%;
+  
+  overflow: hidden;
+
+
   margin: 2rem 0;
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
+  
 }
 
-.coverage-map-container .leaflet-container {
-  font-family: var(--font-primary);
-}
+
+
 
 .coverage-map-container .leaflet-popup-content-wrapper {
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  
 }
 
 .coverage-map-container .leaflet-popup-content {
   margin: 1rem;
+
+
   font-size: 0.9rem;
 }
 
 .coverage-map-container .leaflet-popup-content strong {
   color: var(--burgundy);
+
+  
   font-weight: 600;
 }
 
+
+.coverage-map-container .leaflet-container {
+  font-family: var(--font-primary);
+}

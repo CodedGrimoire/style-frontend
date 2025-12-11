@@ -1,17 +1,34 @@
-/* Custom animation styles for animate.css */
 
-/* Ensure animations work on page load */
 .animate__animated {
   animation-duration: 0.8s;
   animation-fill-mode: both;
 }
 
-/* Faster animation for better UX */
+
 .animate__fadeInUp {
   animation-name: fadeInUp;
 }
 
-/* Custom delay utilities */
+
+
+.hero-content:not(.animate__animated),
+.section-title:not(.animate__animated),
+.service-card:not(.animate__animated) {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+
+
+
+
+.hero-content,
+.section-title,
+.service-card {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
 .animate__delay-1s {
   animation-delay: 1s;
 }
@@ -21,21 +38,5 @@
 }
 
 .animate__delay-3s {
-  animation-delay: 3s;
+  animation-delay: 2s;
 }
-
-/* Ensure elements are initially hidden before animation */
-.hero-content:not(.animate__animated),
-.section-title:not(.animate__animated),
-.service-card:not(.animate__animated) {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* Smooth transitions */
-.hero-content,
-.section-title,
-.service-card {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
