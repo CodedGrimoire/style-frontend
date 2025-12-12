@@ -10,7 +10,7 @@ The application likely has different views and capabilities based on user roles.
 *   **User/Customer:** Can browse products/services, make purchases, and manage their own account.
 *   **Guest:** A non-authenticated user with limited access, likely to browse but not transact.
 
-*(Please update these roles based on your actual implementation.)*
+
 
 ## Tech Stack
 
