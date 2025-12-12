@@ -274,7 +274,18 @@ const ServicesPage = () => {
               { marginTop: '3rem',
               
               padding: '2rem' }}>
-              <p style={{ fontSize: '1.1rem', color: 'var(--gray)' }}>
+
+
+              <p style={
+                
+                
+                { fontSize: '1.1rem',
+                
+                
+                color: 'var(--gray)' 
+                
+                
+                }}>
                 No services found matching your criteria.
               </p>
             </div>

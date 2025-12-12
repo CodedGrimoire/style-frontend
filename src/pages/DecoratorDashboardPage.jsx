@@ -896,8 +896,13 @@ const DecoratorDashboardPage = () => {
                               </div>
 
                               {booking.decoratorId && (
-                                <div className="booking-detail-item">
-                                  <span className="detail-label">
+                                <div 
+                                
+                                
+                                className="booking-detail-item">
+                                  <span 
+                                  
+                                  className="detail-label">
                                     Decorator:
                                     
                                     </span>
@@ -911,7 +916,9 @@ const DecoratorDashboardPage = () => {
                               
                               }
                             </div>
-                            <div className="booking-actions">
+                            <div
+                            
+                            className="booking-actions">
 
 
                               {booking.paymentStatus === 'pending' && (
@@ -1331,23 +1338,59 @@ const DecoratorDashboardPage = () => {
                         
                         
                         </span>
-                      <span className="detail-value">
+                      <span 
+                      
+                      className="detail-value">
                         {new Date(project.date).toLocaleString()}
                       </span>
                     </div>
-                    <div className="project-detail-item">
-                      <span className="detail-label">Location:</span>
-                      <span className="detail-value">{project.location}</span>
+                    <div 
+                    
+                    className="project-detail-item">
+                      <span className="detail-label">
+                        
+                        
+                        Location:
+                        
+                        </span>
+                      <span 
+                      
+                      className="detail-value">
+                        
+                        {project.location}
+                        
+                        </span>
                     </div>
-                    <div className="project-detail-item">
-                      <span className="detail-label">Payment Status:</span>
-                      <span className={`payment-badge payment-${project.paymentStatus}`}>
+                    <div
+                    
+                    
+                    className="project-detail-item">
+
+
+                      <span className="detail-label">
+                        
+                        Payment Status:
+                        
+                        </span>
+                      <span 
+                      
+                      className={`payment-badge payment-${project.paymentStatus}`}>
                         {project.paymentStatus}
                       </span>
                     </div>
-                    <div className="project-detail-item">
-                      <span className="detail-label">Amount:</span>
-                      <span className="detail-value">
+                    <div
+                    
+                    className="project-detail-item">
+                      <span 
+                      
+                      className="detail-label">
+                        
+                        Amount:
+                        
+                        </span>
+                      <span 
+                      
+                      className="detail-value">
                         ${project.serviceId?.cost} {project.serviceId?.unit}
                       </span>
                     </div>
@@ -1365,7 +1408,9 @@ const DecoratorDashboardPage = () => {
                       
                       
                       </h4>
-                    <div className="status-steps">
+                    <div 
+                    
+                    className="status-steps">
                       {getStatusSteps().map((step, index) => {
                         const displayStatus = getDisplayStatus(project.status);
                         const completedSteps = getCompletedSteps(project.status);
@@ -1387,17 +1432,25 @@ const DecoratorDashboardPage = () => {
                             className={`status-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isPending ? 'pending' : ''}`}
                             title={step.label}
                           >
-                            <div className="status-step-circle">
+                            <div
+                            
+                            className="status-step-circle">
                               {isCompleted ? '✓' : isActive ? '●' : index + 1}
                             </div>
-                            <span className="status-step-label">{step.label}</span>
+                            <span className="status-step-label">
+                              
+                              
+                              {step.label}
+                              
+                              
+                              </span>
                           </div>
                         );
                       })}
                     </div>
                   </div>
 
-                  {/* Update Status Actions */}
+                  
                   <div className="project-actions">
                     {project.status !== 'completed' && getNextBackendStatus(project.status) && (
                       <button
@@ -1418,7 +1471,10 @@ const DecoratorDashboardPage = () => {
 
                   
                   {project.paymentStatus === 'paid' && (
-                    <div className="project-payment-info">
+                    <div 
+                    
+                    
+                    className="project-payment-info">
                       <p className="payment-info-text">
                         Payment received: ${project.serviceId?.cost} {project.serviceId?.unit}
                       </p>
@@ -1487,7 +1543,12 @@ const DecoratorDashboardPage = () => {
                       <p 
                       
                       
-                      className="schedule-client">Client: {project.userId?.email || project.userId}</p>
+                      className="schedule-client">
+                        
+                        
+                        Client: {project.userId?.email || project.userId}
+                        
+                        </p>
                     </div>
                     <div className="schedule-status">
                       <span
@@ -1504,6 +1565,8 @@ const DecoratorDashboardPage = () => {
             )}
           </div>
         )}
+
+        
       </div>
     </div>
   );

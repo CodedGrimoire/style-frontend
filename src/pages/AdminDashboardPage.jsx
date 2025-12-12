@@ -37,13 +37,15 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState('bookings');
-  const [bookings, setBookings] = useState([]);
+ 
   const [services, setServices] = useState([]);
  
   const [users, setUsers] = useState([]);
   const [analytics, setAnalytics] = useState(null);
 
    const [decorators, setDecorators] = useState([]);
+
+    const [bookings, setBookings] = useState([]);
   const [serviceForm, setServiceForm] = useState({
     service_name: '',
     cost: '',
@@ -67,8 +69,11 @@ const AdminDashboardPage = () => {
   const [myBookingsCurrentPage, setMyBookingsCurrentPage] = useState(1);
 
 
-  const [selectedUserId, setSelectedUserId] = useState('');
+ 
   const [decoratorSpecialties, setDecoratorSpecialties] = useState([]);
+
+
+     const [selectedUserId, setSelectedUserId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date'); 
    const [sortOrder, setSortOrder] = useState('desc'); 
@@ -81,7 +86,10 @@ const AdminDashboardPage = () => {
   useEffect(() => 
     
     {
-    if (!user) {
+    if (!user) 
+      
+      
+      {
       navigate('/login');
       return;
     }
@@ -111,7 +119,7 @@ const AdminDashboardPage = () => {
       description: '',
       image: '',
     });
-    // Reset user dashboard state
+  
     setMyBookings([]);
     setMyBookingsSearchTerm('');
     setMyBookingsSortBy('date');
@@ -642,8 +650,16 @@ const AdminDashboardPage = () => {
   }, [filteredAndSortedBookings, currentPage]);
 
   
-  const filteredServices = useMemo(() => {
-    if (!serviceSearchTerm) return services;
+  const filteredServices = useMemo(() => 
+    
+    
+    {
+    if (!serviceSearchTerm) 
+      
+      
+      return services;
+
+
     return services.filter(service =>
       service.service_name?.toLowerCase().includes(serviceSearchTerm.toLowerCase()) ||
       service.category?.toLowerCase().includes(serviceSearchTerm.toLowerCase()) ||
@@ -656,7 +672,9 @@ const AdminDashboardPage = () => {
     
     
     {
-    if (!decoratorSearchTerm) return decorators;
+    if (!decoratorSearchTerm)
+      
+      return decorators;
     return decorators.filter(decorator =>
       decorator.userId?.name?.toLowerCase().includes(decoratorSearchTerm.toLowerCase()) ||
       decorator.userId?.email?.toLowerCase().includes(decoratorSearchTerm.toLowerCase()) ||
@@ -996,8 +1014,10 @@ const AdminDashboardPage = () => {
                     }
                     return 0;
                   });
-                  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+               
                   const startIndex = (myBookingsCurrentPage - 1) * ITEMS_PER_PAGE;
+
+                     const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                   const paginatedBookings = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
                   return filtered.length === 0 ? (
@@ -1019,8 +1039,16 @@ const AdminDashboardPage = () => {
                     <>
                       <div className="bookings-grid">
                         {paginatedBookings.map((booking) => (
-                          <div key={booking._id} className="booking-card">
-                            <div className="booking-header">
+                          <div
+                          
+                          key={booking._id} 
+                          
+                          
+                          className="booking-card">
+                            <div
+                            
+                            
+                            className="booking-header">
                               <h3 className="booking-service-name">
                                 
                                 
@@ -1386,11 +1414,19 @@ const AdminDashboardPage = () => {
                     }}
                     className="form-select"
                   >
-                    <option value="date">Sort by Date</option>
+                    <option
+                    
+                    value="date">
+                      
+                      
+                      Sort by Date</option>
 
 
 
-                    <option value="status">Sort by Status</option>
+                    <option value="status">
+                      Sort by Status
+                      
+                      </option>
                   </select>
                   <button
                     className="btn-outline sort-order-btn"
@@ -1407,13 +1443,33 @@ const AdminDashboardPage = () => {
             )}
 
             {bookings.length === 0 ? (
-              <div className="empty-state">
-                <p>No bookings found.</p>
+              <div 
+              
+              
+              className="empty-state">
+                <p>
+                  
+                  No bookings found.
+                  
+                  
+                  </p>
               </div>
             ) : filteredAndSortedBookings.length === 0 ? (
-              <div className="empty-state">
-                <p>No bookings match your search criteria.</p>
-                <button className="btn-outline" onClick={() => setSearchTerm('')}>
+              <div 
+              
+              
+              className="empty-state">
+                <p>
+                  
+                  
+                  No bookings match your search criteria.
+                  
+                  </p>
+                <button 
+                
+                
+                
+                className="btn-outline" onClick={() => setSearchTerm('')}>
                   Clear Search
                 </button>
               </div>
@@ -1422,15 +1478,25 @@ const AdminDashboardPage = () => {
                 <div className="bookings-grid">
                   {paginatedBookings.map((booking) => (
                   <div key={booking._id} className="booking-card">
-                    <div className="booking-header">
-                      <h3 className="booking-service-name">
+                    <div 
+                    
+                    className="booking-header">
+                      <h3 
+                      
+                      
+                      className="booking-service-name">
                         {booking.serviceId?.service_name || 'Unknown Service'}
                       </h3>
-                      <span className={`status-badge status-${booking.status}`}>
+                      <span 
+                      
+                      
+                      className={`status-badge status-${booking.status}`}>
                         {booking.status}
                       </span>
                     </div>
-                    <div className="booking-details">
+                    <div 
+                    
+                    className="booking-details">
 
 
 
@@ -1444,51 +1510,117 @@ const AdminDashboardPage = () => {
                           
                           </span>
                         <span className="detail-value">
+
+
+
                           {booking.userId?.email || booking.userId || 'Unknown'}
                         </span>
                       </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">
+                      <div
+                      
+                      
+                      className="booking-detail-item">
+                        <span 
+                        
+                        className="detail-label">
                           
                           
                           Date:
                           
                           
                           </span>
-                        <span className="detail-value">
+                        <span
+                        
+                        
+                        className="detail-value">
+
+
                           {new Date(booking.date).toLocaleString()}
                         </span>
                       </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">
+                      <div
+                      
+                      className="booking-detail-item">
+                        <span 
+                        
+                        
+                        className="detail-label">
                           
                           
                           Location:
                           
                           
                           </span>
-                        <span className="detail-value">{booking.location}</span>
+                        <span className="detail-value">
+                          
+                          {booking.location}
+                          
+                          
+                          </span>
                       </div>
                       <div className="booking-detail-item">
-                        <span className="detail-label">Payment:</span>
-                        <span className={`payment-badge payment-${booking.paymentStatus}`}>
+                        <span 
+                        
+                        className="detail-label">
+                          
+                          Payment:
+                          
+                          </span>
+                        <span 
+                        
+                        
+                        className={`payment-badge payment-${booking.paymentStatus}`}>
                           {booking.paymentStatus}
                         </span>
                       </div>
-                      <div className="booking-detail-item">
-                        <span className="detail-label">Amount:</span>
-                        <span className="detail-value">
+                      <div 
+                      
+                      className="booking-detail-item">
+                        <span 
+                        
+                        
+                        className="detail-label">
+                          
+                          Amount:
+                          
+                          </span>
+                        <span 
+                        
+                        
+                        className="detail-value">
+
+
                           ${booking.serviceId?.cost} {booking.serviceId?.unit}
                         </span>
                       </div>
                       {booking.decoratorId && (
-                        <div className="booking-detail-item">
-                          <span className="detail-label">Decorator:</span>
-                          <span className="detail-value">Assigned</span>
+                        <div 
+                        
+                        
+                        className="booking-detail-item">
+                          <span 
+                          
+                          className="detail-label">
+                            
+                            Decorator:
+                            
+                            
+                            </span>
+                          <span 
+                          
+                          className="detail-value">
+                            
+                            Assigned
+                            
+                            
+                            </span>
                         </div>
                       )}
                     </div>
-                    <div className="booking-actions">
+                    <div 
+                    
+                    
+                    className="booking-actions">
                       {!booking.decoratorId && booking.paymentStatus === 'paid' && (
                         <button
                           className="btn-primary"
@@ -1500,36 +1632,71 @@ const AdminDashboardPage = () => {
                       {selectedBooking === booking._id && (
                         <div className="assign-decorator-form">
                           {decorators.filter(d => d.status === 'approved').length === 0 ? (
-                            <div className="assign-decorator-message">
-                              <p>No approved decorators available. Please approve decorators first.</p>
+                            <div
+                            
+                            className="assign-decorator-message">
+                              <p>
+                                
+                                
+                                No approved decorators available. Please approve decorators first.
+                                
+                                
+                                </p>
                             </div>
                           ) : (
                             <>
                               <select
                                 value={selectedDecoratorId}
                                 onChange={(e) => setSelectedDecoratorId(e.target.value)}
+
+
+
                                 className="assign-decorator-select"
                               >
-                                <option value="">Select Decorator</option>
+                                <option value="">
+                                  
+                                  Select Decorator
+                                  
+                                  
+                                  </option>
                                 {decorators
                                   .filter(d => d.status === 'approved')
                                   .map(decorator => (
-                                    <option key={decorator._id} value={decorator._id}>
+                                    <option key={decorator._id}
+                                     value={decorator._id}>
+
+
                                       {decorator.userId?.name || decorator.userId?.email || decorator._id}
                                     </option>
-                                  ))}
+                                  ))
+                                  
+                                  }
                               </select>
-                              <div className="assign-decorator-buttons">
+                              <div 
+                              
+                              
+                              className="assign-decorator-buttons">
+
+
                                 <button
                                   className="btn-primary btn-small"
+
+
                                   onClick={() => handleAssignDecorator(booking._id)}
                                   disabled={!selectedDecoratorId || decorators.filter(d => d.status === 'approved').length === 0}
                                 >
                                   Confirm
                                 </button>
+
+
                                 <button
                                   className="btn-outline btn-small"
-                                  onClick={() => {
+
+
+                                  onClick={() => 
+                                    
+                                    
+                                    {
                                     setSelectedBooking(null);
                                     setSelectedDecoratorId('');
                                   }}
@@ -1546,9 +1713,12 @@ const AdminDashboardPage = () => {
                   ))}
                 </div>
 
-                {/* Pagination */}
+            
                 {totalPages > 1 && (
-                  <div className="pagination">
+                  <div 
+                  
+                  
+                  className="pagination">
                     <button
                       className="btn-outline"
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -1556,11 +1726,16 @@ const AdminDashboardPage = () => {
                     >
                       Previous
                     </button>
-                    <span className="pagination-info">
+                    <span 
+                    
+                    
+                    className="pagination-info">
                       Page {currentPage} of {totalPages} ({filteredAndSortedBookings.length} bookings)
                     </span>
                     <button
                       className="btn-outline"
+
+
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
                     >
@@ -1573,10 +1748,21 @@ const AdminDashboardPage = () => {
           </div>
         )}
 
-        {/* Services Tab */}
+       
         {activeTab === 'services' && (
-          <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">Manage Services & Packages</h2>
+          <div
+          
+          
+          className="dashboard-section animate__animated animate__fadeInUp">
+            <h2 
+            
+            
+            className="section-heading">
+              
+              Manage Services & Packages
+              
+              
+              </h2>
             
             <form 
               onSubmit={editingService ? handleUpdateService : handleCreateService}
@@ -1585,9 +1771,22 @@ const AdminDashboardPage = () => {
               <h3 className="form-title">
                 {editingService ? 'Edit Service' : 'Create New Service'}
               </h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Service Name *</label>
+
+
+              <div 
+              
+              
+              className="form-grid">
+                <div
+                
+                className="form-group">
+                  <label 
+                  
+                  className="form-label">
+                    
+                    Service Name *
+                    
+                    </label>
                   <input
                     type="text"
                     value={serviceForm.service_name}
@@ -1597,8 +1796,17 @@ const AdminDashboardPage = () => {
                     placeholder="e.g., Interior Design Consultation"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Cost (BDT) *</label>
+                <div
+                
+                className="form-group">
+                  <label 
+                  
+                  className="form-label">
+                    
+                    
+                    Cost (BDT) *
+                    
+                    </label>
                   <input
                     type="number"
                     step="0.01"
@@ -1609,44 +1817,157 @@ const AdminDashboardPage = () => {
                     placeholder="150"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Unit *</label>
+                <div 
+                
+                className="form-group">
+                  <label 
+                  
+                  className="form-label">
+                    
+                    Unit *
+                    
+                    </label>
                   <select
                     value={serviceForm.unit}
                     onChange={(e) => setServiceForm({ ...serviceForm, unit: e.target.value })}
                     className="form-select"
                   >
-                    <option value="per hour">Per Hour</option>
-                    <option value="per room">Per Room</option>
-                    <option value="per project">Per Project</option>
-                    <option value="per square foot">Per Square Foot</option>
-                    <option value="per floor">Per Floor</option>
-                    <option value="per meter">Per Meter</option>
-                    <option value="flat rate">Flat Rate</option>
+                    <option 
+                    
+                    value="per hour">
+                      
+                      Per Hour
+                      
+                      </option>
+
+
+                    <option
+                    
+                    value="per room">
+                      
+                      Per Room
+                      
+                      </option>
+                    <option 
+                    
+                    value="per project">
+                      
+                      Per Project
+                      
+                      </option>
+                    <option 
+                    
+                    value="per square foot">
+                      
+                      Per Square Foot
+                      
+                      </option>
+                    <option value="per floor">
+                      
+                      Per Floor</option>
+                    <option 
+                    
+                    value="per meter">Per Meter
+
+
+                    </option>
+                    <option value="flat rate">
+                      
+                      Flat Rate
+                      
+                      </option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Category *</label>
+                  <label 
+                  
+                  
+                  className="form-label">
+                    
+                    Category *
+                    
+                    
+                    </label>
                   <select
                     value={serviceForm.category}
                     onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
                     className="form-select"
                   >
-                    <option value="interior">Interior</option>
-                    <option value="exterior">Exterior</option>
-                    <option value="event">Event</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="residential">Residential</option>
-                    <option value="home">Home</option>
-                    <option value="wedding">Wedding</option>
-                    <option value="office">Office</option>
-                    <option value="seminar">Seminar</option>
-                    <option value="meeting">Meeting</option>
-                    <option value="other">Other</option>
+                    <option 
+                    
+                    value="interior">
+                      
+                      Interior
+                      
+                      </option>
+                    <option value="exterior">
+                      Exterior</option>
+
+
+                    <option value="event">
+                      
+                      Event
+                      
+                      </option>
+
+
+                    <option
+                    
+                    
+                    value="commercial">Commercial
+                    
+                    </option>
+                    <option value="residential">
+                      
+                      
+                      Residential
+                      
+                      </option>
+                    <option 
+                    value="home">
+                      Home</option>
+                    <option 
+                    value="wedding">Wedding
+                    
+                    </option>
+                    <option 
+                    
+                    value="office">Office
+                    
+                    </option>
+                    <option value="seminar">
+                      
+                      Seminar
+                      
+                      </option>
+                    <option
+                    
+                    value="meeting">
+                      
+                      Meeting
+                      
+                      </option>
+                    <option 
+                    
+                    value="other">
+                      Other
+                      </option>
                   </select>
                 </div>
-                <div className="form-group form-group-full">
-                  <label className="form-label">Description *</label>
+                <div 
+                
+                
+                className="form-group form-group-full">
+                  <label 
+                  
+                  
+                  className="form-label">
+                    
+                    
+                    Description *
+                    
+                    
+                    </label>
                   <textarea
                     value={serviceForm.description}
                     onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
@@ -1656,8 +1977,19 @@ const AdminDashboardPage = () => {
                     placeholder="Detailed description of the service..."
                   />
                 </div>
-                <div className="form-group form-group-full">
-                  <label className="form-label">Image URL</label>
+
+
+                <div 
+                
+                className="form-group form-group-full">
+                  <label 
+                  
+                  
+                  className="form-label">
+                    
+                    Image URL
+                    
+                    </label>
                   <input
                     type="url"
                     value={serviceForm.image}
@@ -1665,16 +1997,34 @@ const AdminDashboardPage = () => {
                     className="form-input"
                     placeholder="https://example.com/image.jpg"
                   />
+
+
+
                 </div>
               </div>
-              <div className="form-actions">
-                <button type="submit" className="btn-primary">
+
+
+
+              <div 
+              
+              
+              className="form-actions">
+                <button 
+                
+                
+                type="submit"
+                
+                
+                className="btn-primary">
                   {editingService ? 'Update Service' : 'Create Service'}
                 </button>
                 {editingService && (
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={() => 
+                      
+                      
+                      {
                       setEditingService(null);
                       setServiceForm({
                         service_name: '',
@@ -1691,18 +2041,44 @@ const AdminDashboardPage = () => {
                   </button>
                 )}
               </div>
+
+
             </form>
 
-            <h3 className="section-subheading">Existing Services</h3>
+            <h3 
             
-            {/* Search Services */}
+            
+            className="section-subheading">
+              
+              
+              Existing Services
+              
+              
+              </h3>
+            
+           
             {services.length > 0 && (
-              <div className="search-container" style={{ marginBottom: '1.5rem' }}>
+              <div
+              
+              className="search-container" 
+              
+              
+              style={
+                
+                { marginBottom: '1.5rem'
+
+
+                 }
+                 
+                 
+                 }>
                 <input
                   type="text"
                   placeholder="Search services by name, category, or description..."
                   value={serviceSearchTerm}
                   onChange={(e) => setServiceSearchTerm(e.target.value)}
+
+
                   className="form-input search-input"
                 />
               </div>
@@ -1713,31 +2089,85 @@ const AdminDashboardPage = () => {
                 <p>No services found.</p>
               </div>
             ) : filteredServices.length === 0 ? (
-              <div className="empty-state">
-                <p>No services match your search criteria.</p>
-                <button className="btn-outline" onClick={() => setServiceSearchTerm('')}>
+              <div 
+              
+              
+              className="empty-state">
+                <p>
+                  
+                  No services match your search criteria.
+                  
+                  
+                  </p>
+
+
+                <button 
+                
+                
+                className="btn-outline"
+                
+                
+                onClick={() => setServiceSearchTerm('')}>
                   Clear Search
                 </button>
               </div>
             ) : (
               <div className="services-grid">
                 {filteredServices.map((service) => (
-                  <div key={service._id} className="service-card">
+                  <div key={service._id} 
+                  
+                  
+                  className="service-card">
+
+
                     {service.image && (
-                      <div className="service-card-image">
-                        <img src={service.image} alt={service.service_name} />
+                      <div 
+                      
+                      
+                      className="service-card-image">
+                        <img 
+                        
+                        
+                        src={service.image} 
+                        
+                        
+                        alt="" />
                       </div>
                     )}
                     <div className="service-card-content">
-                      <h4 className="service-card-title">{service.service_name}</h4>
-                      <p className="service-card-meta">
+                      <h4 
+                      
+                      className="service-card-title">
+                        
+                        
+                        {service.service_name}
+                        
+                        
+                        </h4>
+                      <p 
+                      
+                      
+                      className="service-card-meta">
                         ${service.cost} {service.unit} - {service.category}
                       </p>
-                      <p className="service-card-description">{service.description}</p>
-                      <div className="service-card-actions">
+                      <p 
+                      
+                      
+                      className="service-card-description">
+                        
+                        {service.description}
+                        
+                        
+                        </p>
+                      <div 
+                      
+                      
+                      className="service-card-actions">
                         <button
                           className="btn-outline"
-                          onClick={() => {
+                          onClick={() => 
+                            
+                            {
                             setEditingService(service);
                             setServiceForm({
                               service_name: service.service_name,
@@ -1751,12 +2181,17 @@ const AdminDashboardPage = () => {
                         >
                           Edit
                         </button>
+
+
                         <button
                           className="btn-outline btn-danger"
                           onClick={() => handleDeleteService(service._id)}
                         >
                           Delete
                         </button>
+
+
+
                       </div>
                     </div>
                   </div>
@@ -1766,119 +2201,247 @@ const AdminDashboardPage = () => {
           </div>
         )}
 
-        {/* Decorators Tab */}
+        
         {activeTab === 'decorators' && (
-          <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">Manage Decorators</h2>
+          <div 
+          
+          className="dashboard-section animate__animated animate__fadeInUp">
+            <h2 
             
-            {/* Make User a Decorator */}
+            className="section-heading">
+              
+              Manage Decorators
+              
+              </h2>
+            
+           
             <div className="decorator-form-section">
-              <h3 className="section-subheading">Make User a Decorator</h3>
+              <h3 
+              
+              
+              className="section-subheading">
+                
+                Make User a Decorato
+                
+                
+                </h3>
+
+
               <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label">Select User</label>
+                <div 
+                
+                
+                className="form-group">
+                  <label className="form-label">
+                    
+                    
+                    Select User
+                    
+                    
+                    </label>
                   <select
                     value={selectedUserId}
                     onChange={(e) => setSelectedUserId(e.target.value)}
                     className="form-select"
                   >
-                    <option value="">Select a user</option>
+                    <option value="">
+                      
+                      
+                      Select a user
+                      
+                      </option>
                     {users
                       .filter(u => u.role === 'user')
                       .map(user => (
                         <option key={user._id} value={user._id}>
                           {user.name || user.email} ({user.email})
                         </option>
-                      ))}
+                      ))
+                      
+                      
+                      }
                   </select>
                   {users.filter(u => u.role === 'user').length === 0 && (
-                    <p style={{ 
+                    <p 
+                    
+                    
+                    style={
+                      
+                      
+                      { 
                       marginTop: '0.5rem', 
-                      fontSize: '0.875rem', 
+                     
                       color: 'var(--gray-dark)',
+
+                        fontSize: '0.875rem', 
                       fontStyle: 'italic'
-                    }}>
+                    }
+                    
+                    
+                    }>
                       No regular users available to convert to decorator.
                     </p>
                   )}
                 </div>
-                <div className="form-group form-group-full">
-                  <label className="form-label">Specialties (select one or more)</label>
-                  <div style={{ 
+                <div 
+                
+                
+                className="form-group form-group-full">
+                  <label 
+                  
+                  
+                  className="form-label">
+                    
+                    Specialties (select one or more)
+                    
+                    
+                    </label>
+
+
+                  <div style={
+                    
+                    { 
                     display: 'grid', 
+
+                     gap: '0.75rem',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
-                    gap: '0.75rem',
+                   
                     marginTop: '0.5rem'
                   }}>
                     {['interior', 'exterior', 'event', 'commercial', 'residential', 'other'].map((category) => (
                       <label
                         key={category}
-                        style={{
+
+
+                        style={
+                          
+                          
+                          {
                           display: 'flex',
+
+                            padding: '0.5rem',
                           alignItems: 'center',
                           gap: '0.5rem',
-                          cursor: 'pointer',
-                          padding: '0.5rem',
+                         
+                         
                           borderRadius: 'var(--radius-sm)',
-                          border: '1px solid var(--beige)',
+                        
                           backgroundColor: decoratorSpecialties.includes(category) 
                             ? 'var(--magenta-light)' 
                             : 'transparent',
-                          transition: 'all 0.2s'
-                        }}
+
+                              border: 'solid  1px var(--beige)',
+                          
+                        }
+                      
+                      
+                      }
                       >
                         <input
                           type="checkbox"
                           checked={decoratorSpecialties.includes(category)}
                           onChange={(e) => {
-                            if (e.target.checked) {
+                            if (e.target.checked) 
+                              
+                              
+                              
+                              {
                               setDecoratorSpecialties([...decoratorSpecialties, category]);
-                            } else {
+                            } 
+                            
+                            
+                            
+                            else 
+                              
+                              
+                              
+                              {
                               setDecoratorSpecialties(decoratorSpecialties.filter(s => s !== category));
                             }
                           }}
-                          style={{ cursor: 'pointer' }}
+                         
                         />
-                        <span style={{ 
-                          textTransform: 'capitalize',
+                        <span style={
+                          
+                          
+                          { 
+                          
                           fontSize: '0.9rem',
                           color: decoratorSpecialties.includes(category) 
                             ? 'var(--burgundy-dark)' 
                             : 'var(--gray-dark)'
                         }}>
                           {category}
+
+
                         </span>
                       </label>
-                    ))}
+                    ))
+                    
+                    
+                    }
                   </div>
                   {decoratorSpecialties.length > 0 && (
                     <div style={{ 
                       marginTop: '0.75rem', 
+
+                         color: 'var(--gray-dark)',
                       fontSize: '0.875rem', 
-                      color: 'var(--gray-dark)',
+                    
                       fontStyle: 'italic'
                     }}>
                       Selected: {decoratorSpecialties.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
                     </div>
                   )}
                 </div>
-                <div className="form-group">
+                <div
+                
+                
+                className="form-group">
                   <button
                     className="btn-primary"
                     onClick={handleMakeDecorator}
                     disabled={!selectedUserId || decoratorSpecialties.length === 0}
                   >
                     Make Decorator
+
+
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Decorators List */}
-            <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '2px solid var(--beige)' }}>
-              <h3 className="section-subheading">All Decorators ({decorators.length})</h3>
+            
+            <div
+            
+            
+            style=
+            {
               
-              {/* Search Decorators */}
+              
+              { 
+              
+              paddingTop: '2rem',
+               marginTop: '3rem',
+              
+              
+              borderTop: '2px var(--beige) solid '
+              
+              
+              }
+              
+              }>
+              <h3 
+              
+              className="section-subheading">
+                
+                
+                All Decorators ({decorators.length})
+                
+                
+                </h3>
+              
+             
               {decorators.length > 0 && (
                 <div className="search-container" style={{ marginBottom: '1.5rem' }}>
                   <input
@@ -1894,50 +2457,117 @@ const AdminDashboardPage = () => {
               {loading && activeTab === 'decorators' ? (
                 <Loading />
               ) : decorators.length === 0 ? (
-                <div className="empty-state">
-                  <p>No decorators found. Create decorators by converting users to decorators above.</p>
+
+
+                <div 
+                
+                className="empty-state">
+                  <p>
+                    
+                    
+                    No decorators found. Create decorators by converting users to decorators above.
+                    
+                    
+                    </p>
                 </div>
               ) : filteredDecorators.length === 0 ? (
                 <div className="empty-state">
-                  <p>No decorators match your search criteria.</p>
-                  <button className="btn-outline" onClick={() => setDecoratorSearchTerm('')}>
+                  <p>
+                    
+                    
+                    No decorators match your search criteria.
+                    
+                    </p>
+                  <button 
+                  
+                  
+                  className="btn-outline" onClick={() => setDecoratorSearchTerm('')}>
+
+
                     Clear Search
                   </button>
                 </div>
               ) : (
                 <div className="decorators-grid">
+
+
+
                   {filteredDecorators.map((decorator) => (
+
+
                     <div key={decorator._id} className="decorator-card">
-                      <div className="decorator-header">
+                      <div
+                      
+                      className="decorator-header">
                         <h4 className="decorator-name">
                           {decorator.userId?.name || decorator.userId?.email || 'Unknown'}
                         </h4>
+
+
                         <span className={`status-badge status-${decorator.status}`}>
                           {decorator.status}
+
+
                         </span>
                       </div>
-                      <div className="decorator-details">
+                      <div 
+                      
+                      
+                      className="decorator-details">
                         <div className="decorator-detail-item">
-                          <span className="detail-label">Email:</span>
+                          <span 
+                          
+                          
+                          className="detail-label">
+                            
+                            Email:
+                            
+                            
+                            </span>
                           <span className="detail-value">
                             {decorator.userId?.email || 'N/A'}
                           </span>
                         </div>
                         <div className="decorator-detail-item">
-                          <span className="detail-label">Specialties:</span>
+                          <span 
+                          
+                          className="detail-label">
+                            
+                            Specialties:
+                            
+                            
+                            </span>
                           <span className="detail-value">
                             {decorator.specialties?.join(', ') || 'None'}
                           </span>
                         </div>
-                        <div className="decorator-detail-item">
-                          <span className="detail-label">Rating:</span>
+                        <div 
+                        
+                        
+                        className="decorator-detail-item">
+                          <span 
+                          
+                          className="detail-label">
+                            
+                            Rating:
+                            
+                            </span>
                           <span className="detail-value">
                             {decorator.rating || 0} / 5
                           </span>
                         </div>
-                        <div className="decorator-detail-item">
-                          <span className="detail-label">Projects:</span>
-                          <span className="detail-value">
+                        <div
+                        
+                        className="decorator-detail-item">
+                          <span className="detail-label">
+                            
+                            
+                            Projects:
+                            
+                            </span>
+                          <span 
+                          
+                          className="detail-value">
                             {decorator.completedProjects || 0} completed
                           </span>
                         </div>
@@ -1976,39 +2606,100 @@ const AdminDashboardPage = () => {
           </div>
         )}
 
-        {/* Analytics Tab */}
+      
         {activeTab === 'analytics' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 className="section-heading">Analytics & Reports</h2>
+            <h2 
+            
+            
+            className="section-heading">
+              
+              
+              Analytics & Reports
+              
+              
+              </h2>
             {loading ? (
               <Loading />
             ) : analytics ? (
-              <div className="analytics-container">
-                {/* Revenue Analytics */}
+              <div 
+              
+              className="analytics-container">
+               
                 <div className="analytics-card">
-                  <h3 className="analytics-title">Revenue Monitoring</h3>
-                  <div className="analytics-stats">
-                    <div className="analytics-stat">
-                      <span className="stat-label">Total Revenue</span>
-                      <span className="stat-value-large">
+                  <h3 
+                  
+                  className="analytics-title">
+                    
+                    
+                    Revenue Monitoring
+                    
+                    </h3>
+                  <div 
+                  
+                  className="analytics-stats">
+                    <div 
+                    
+                    className="analytics-stat">
+                      <span className="stat-label">
+                        
+                        Total Revenue
+                        
+                        </span>
+                      <span 
+                      
+                      
+                      className="stat-value-large">
                         ${parseFloat(analytics.revenue?.totalRevenue || 0).toFixed(2)}
                       </span>
                     </div>
                     <div className="analytics-stat">
-                      <span className="stat-label">Total Transactions</span>
-                      <span className="stat-value-large">
+                      <span 
+                      
+                      
+                      className="stat-label">
+                        
+                        Total Transactions
+                        
+                        </span>
+                      <span 
+                      
+                      className="stat-value-large">
                         {analytics.revenue?.totalTransactions || 0}
                       </span>
                     </div>
                   </div>
                   {analytics.revenue?.revenueByMonth && (
-                    <div className="revenue-by-month">
-                      <h4>Revenue by Month</h4>
-                      <div className="revenue-list">
+                    <div 
+                    
+                    className="revenue-by-month">
+                      <h4>
+                        
+                        Revenue by Month
+                        
+                        
+                        </h4>
+                      <div 
+                      
+                      
+                      className="revenue-list">
                         {Object.entries(analytics.revenue.revenueByMonth).map(([month, revenue]) => (
-                          <div key={month} className="revenue-item">
-                            <span>{month}</span>
-                            <span>${parseFloat(revenue).toFixed(2)}</span>
+                          <div key={month} 
+                          
+                          
+                          className="revenue-item">
+                            <span>
+                              
+                              {month}
+                              
+                              </span>
+                            <span>
+                              
+                              
+                              ${parseFloat(revenue).toFixed(2)}
+                              
+                              
+                              </span>
                           </div>
                         ))}
                       </div>
@@ -2016,44 +2707,110 @@ const AdminDashboardPage = () => {
                   )}
                 </div>
 
-                {/* Service Demand Chart */}
+              
                 <div className="analytics-card">
-                  <h3 className="analytics-title">Service Demand Chart</h3>
+                  <h3 
+                  
+                  className="analytics-title">
+                    
+                    Service Demand Chart
+                    
+                    
+                    </h3>
                   {getServiceDemandChart()}
                 </div>
 
-                {/* Service Demand Details */}
+               
                 {analytics.demand?.serviceDemand && (
-                  <div className="analytics-card">
-                    <h3 className="analytics-title">Service Demand Details</h3>
-                    <div className="demand-table">
+                  <div 
+                  
+                  className="analytics-card">
+                    <h3 
+                    
+                    className="analytics-title">
+                      
+                      Service Demand Details
+                      
+                      </h3>
+                    <div 
+                    
+                    
+                    className="demand-table">
                       <table>
                         <thead>
                           <tr>
-                            <th>Service Name</th>
-                            <th>Category</th>
-                            <th>Total Bookings</th>
-                            <th>Completed</th>
+                            <th>
+                              
+                              Service Name
+                              
+                              </th>
+                            <th>
+                              Category
+                              
+                              </th>
+                            <th>
+                              
+                              Total Bookings
+                              
+                              </th>
+                            <th>
+                              
+                              Completed
+                              
+                              </th>
                           </tr>
                         </thead>
                         <tbody>
                           {analytics.demand.serviceDemand.map((service) => (
-                            <tr key={service._id}>
-                              <td>{service.serviceName}</td>
-                              <td>{service.serviceCategory}</td>
-                              <td>{service.bookingCount || 0}</td>
-                              <td>{service.completedCount || 0}</td>
+                            <tr 
+                            
+                            
+                            key={service._id}>
+                              <td>
+                                
+                                {service.serviceName}
+                                
+                                </td>
+                              <td>
+                                
+                                
+                                {service.serviceCategory}
+                                
+                                </td>
+                              <td>
+                                
+                                {service.bookingCount || 0}
+                                
+                                </td>
+                              <td>
+                                
+                                {service.completedCount || 0}
+                                
+                                </td>
                             </tr>
-                          ))}
+                          ))
+                          
+                          
+                          }
                         </tbody>
                       </table>
+
+
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="empty-state">
-                <p>No analytics data available.</p>
+              <div 
+              
+              className="empty-state">
+                <p>
+                  
+                  
+                  No analytics data available.
+                  
+                  
+                  </p>
               </div>
             )}
           </div>

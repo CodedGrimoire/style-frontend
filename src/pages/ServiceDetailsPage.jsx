@@ -30,7 +30,9 @@ const ServiceDetailsPage = () => {
     const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  useEffect(() => 
+    
+    {
     const fetchService = async () => 
       
       
@@ -179,17 +181,26 @@ const ServiceDetailsPage = () => {
                       
                       </p>
                     <button 
-                      onClick={() => navigate('/login', { state: { from: `/service/${id}` } })}
+                      onClick={() => navigate('/login',
+                        
+                        
+                        { state: { from: `/service/${id}` } })}
                       className="btn-primary"
                     >
                       Login to Book
+
+
                     </button>
                   </div>
-                )}
+                )
+                
+                }
               </div>
             </div>
           </div>
         </div>
+
+
       </section>
 
       <BookingModal
