@@ -1,16 +1,22 @@
-# React + Vite
+# style-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the Style application. It appears to be a client-side application responsible for the user interface, presentation logic, and interaction with backend services, including payment processing.
 
-Currently, two official plugins are available:
+## Role-Based Access Control
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application likely has different views and capabilities based on user roles. While the specific roles are defined in the application logic, typical roles for a platform like this might include:
 
-## React Compiler
+*   **Admin:** Has full access to manage users, content, and view all data.
+*   **User/Customer:** Can browse products/services, make purchases, and manage their own account.
+*   **Guest:** A non-authenticated user with limited access, likely to browse but not transact.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*(Please update these roles based on your actual implementation.)*
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The project is built with modern web technologies.
+
+*   **Language:** TypeScript and JavaScript
+*   **Payments:** Stripe is used for handling payments.
+*   **Linting:** ESLint for code quality and consistency.
+*   **Package Management:** npm or Yarn
