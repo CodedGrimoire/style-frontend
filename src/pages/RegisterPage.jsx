@@ -393,7 +393,7 @@ const RegisterPage = () =>
             style={{ 
               padding: '0.75rem', 
               marginTop: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer'
+                background:'rgba(236, 240, 200, 1)',
             }}
           >
             {loading ? 'Creating account...' : 'Sign Up'}
@@ -416,7 +416,9 @@ const RegisterPage = () =>
 
 
               width: '100%',
-              cursor: loading ? 'not-allowed' : 'pointer'
+
+                 background:'rgba(236, 240, 200, 1)',
+             
             }}
           >
             Sign up with Google

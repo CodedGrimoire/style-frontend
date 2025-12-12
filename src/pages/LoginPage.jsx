@@ -282,7 +282,7 @@ const LoginPage = () =>
               padding: '0.75rem', 
 
                color: 'black',
-               background:'#dfe2bcff',
+                background:'rgba(236, 240, 200, 1)',
               marginTop: '1rem',
               
             }}
@@ -310,7 +310,7 @@ const LoginPage = () =>
               padding: '0.75rem', 
 
                color: 'black',
-               background:'#dfe2bcff',
+               background:'rgba(236, 240, 200, 1)',
               width: '100%',
               
             }}
