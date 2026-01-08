@@ -1,13 +1,13 @@
 .footer {
- 
   color: var(--white);
- 
   margin-top: 4rem;
+  padding: 3rem 0 1.5rem;
+  background: var(--neutral-900);
+  transition: background-color var(--transition-normal);
+}
 
-
-   padding: 3rem 0 1.5rem;
-
-    background: #2f0f1a;
+[data-theme="dark"] .footer {
+  background: var(--neutral-800);
 }
 
 .footer-content {

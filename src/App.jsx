@@ -38,8 +38,10 @@ import PaymentPage from './pages/PaymentPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 
 import AboutPage from './pages/AboutPage';
-
 import RegisterPage from './pages/RegisterPage';
+import HelpPage from './pages/HelpPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 
 
 import './App.css';
@@ -103,6 +105,9 @@ function App() {
             <Route path="/service/:id" element={<ServiceDetailsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             

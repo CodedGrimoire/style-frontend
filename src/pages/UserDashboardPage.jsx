@@ -1,17 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
-
 import 'animate.css';
 import { getMyBookings, cancelBooking } from '../services/api';
-
 import Loading from '../components/Loading';
-
- import { useNavigate } from 'react-router-dom';
+import DashboardSidebar from '../components/DashboardSidebar';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-
 import '../styles/dashboard.css';
-
- import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 
 const ITEMS_PER_PAGE = 5;
@@ -254,116 +249,71 @@ const UserDashboardPage = () => {
     
     </div>;
 
+  const { userProfile } = useAuth();
+
   return (
-    <div 
-    
-    className="dashboard-container">
-      <div 
-      
-      
-      className="dashboard-header">
-        <h1 className="dashboard-title">
-          
-          
-          My Dashboard
-          
-          
-          </h1>
-        <p 
-        
-        
-        className="dashboard-subtitle">
-          
-          
-          Manage your bookings and profile
-          
-          
-          </p>
-      </div>
+    <div className="dashboard-container">
+      <DashboardSidebar 
+        role={userProfile?.role || 'user'} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+      />
+      <div className="dashboard-main">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">My Dashboard</h1>
+          <p className="dashboard-subtitle">Manage your bookings and profile</p>
+        </div>
 
-      <div
-      
-      
-      className="dashboard-tabs">
-        <button
-          className=
-          
-          {`dashboard-tab ${activeTab === 'profile' ? 'active' : ''}`
-        
-        
-        }
-          onClick={() => setActiveTab('profile')}
-        >
-          My Profile
-        </button>
+        {/* Overview Cards */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {bookings.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Total Bookings</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {bookings.filter(b => b.paymentStatus === 'paid').length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Paid</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {getUpcomingBookings().length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Upcoming</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {bookings.filter(b => b.status === 'completed').length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Completed</div>
+          </div>
+        </div>
 
+        {/* Tabs hidden - using sidebar instead */}
 
-
-        <button
-          className={`dashboard-tab ${activeTab === 'bookings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bookings')}
-        >
-          My Bookings
-
-
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'payments' ? 'active' : ''}`}
-
-
-
-          onClick={() => setActiveTab('payments')}
-        >
-          Payment History
-        </button>
-      </div>
-
-      <div 
-      
-      className="dashboard-content">
-       
-        {activeTab === 'profile' && (
-          <div 
-          
-          className="dashboard-section animate__animated animate__fadeInUp">
-            <h2 
-            
-            className="section-heading">
-              
-              
-              Profile Information
-              
-              </h2>
-            <div 
-            
-            className="profile-card">
-              <div 
-              
-              className="profile-avatar">
-                {user?.photoURL ? (
-                  <img src={user.photoURL}
-                  
-                  
-                  alt=""
-                  
-                  
-                  />
-                ) : (
-                  <div
-                  
-                  
-                  className="avatar-placeholder">
-                    {user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )
-                
-                
-                }
-              </div>
-              <div 
-              
-              
-              className="profile-info">
+        <div className="dashboard-content">
+          {activeTab === 'profile' && (
+            <div className="dashboard-section animate__animated animate__fadeInUp">
+              <h2 className="section-heading">Profile Information</h2>
+              <div className="profile-card">
+                <div className="profile-avatar">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName || 'User'} />
+                  ) : (
+                    <div className="avatar-placeholder">
+                      {user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                </div>
+                <div className="profile-info">
                 <div className="form-group">
                   <label 
                   
@@ -969,6 +919,7 @@ const UserDashboardPage = () => {
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

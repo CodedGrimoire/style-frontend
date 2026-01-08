@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-
 import { useAuth } from '../context/AuthContext';
 import {
   getAllBookings,
@@ -18,13 +17,10 @@ import {
   getMyBookings,
   cancelBooking,
 } from '../services/api';
-
 import toast from 'react-hot-toast';
+import DashboardSidebar from '../components/DashboardSidebar';
 import '../styles/dashboard.css';
-
 import { useNavigate } from 'react-router-dom';
-
-
 import Loading from '../components/Loading';
 import 'animate.css';
 
@@ -735,71 +731,53 @@ const AdminDashboardPage = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">
-          
-          
-          
-          Admin Dashboard
-          
-          </h1>
-        <p className="dashboard-subtitle">
-          
-          
-          Manage services, decorators, bookings, and analytics
-          
-          
-          </p>
-      </div>
+      <DashboardSidebar 
+        role="admin" 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+      />
+      <div className="dashboard-main">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Admin Dashboard</h1>
+          <p className="dashboard-subtitle">Manage services, decorators, bookings, and analytics</p>
+        </div>
 
-      <div className="dashboard-tabs">
-        <button
-          className={`dashboard-tab ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          My Profile
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'my-bookings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('my-bookings')}
-        >
-          My Bookings
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'payments' ? 'active' : ''}`}
+        {/* Overview Cards */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {bookings.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Total Bookings</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {services.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Services</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {decorators.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Decorators</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {analytics?.revenue?.totalRevenue ? `$${parseFloat(analytics.revenue.totalRevenue).toFixed(0)}` : '$0'}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Total Revenue</div>
+          </div>
+        </div>
 
+        {/* Tabs hidden - using sidebar instead */}
 
-          onClick={() => setActiveTab('payments')}
-        >
-          Payment History
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'bookings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bookings')}
-        >
-          Manage Bookings
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'services' ? 'active' : ''}`}
-          onClick={() => setActiveTab('services')}
-        >
-          Manage Services
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'decorators' ? 'active' : ''}`}
-          onClick={() => setActiveTab('decorators')}
-        >
-          Manage Decorators
-        </button>
-        <button
-          className={`dashboard-tab ${activeTab === 'analytics' ? 'active' : ''}`}
-          onClick={() => setActiveTab('analytics')}
-        >
-          Analytics
-        </button>
-      </div>
-
-      <div className="dashboard-content">
+        <div className="dashboard-content">
       
         {activeTab === 'profile' && (
           <div 
@@ -2815,6 +2793,7 @@ const AdminDashboardPage = () => {
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

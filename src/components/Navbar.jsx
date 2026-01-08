@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import DarkModeToggle from './DarkModeToggle';
 import '../styles/navbar.css';
 
 const Navbar = () => {
@@ -98,6 +99,7 @@ const Navbar = () => {
 
      
       <div className="navbar-actions">
+        <DarkModeToggle />
         {user ? (
           <>
             <button 
@@ -302,6 +304,9 @@ const Navbar = () => {
                 </Link>
               </>
             )}
+            <div style={{ padding: '1rem 2rem', borderTop: '1px solid var(--border-color)' }}>
+              <DarkModeToggle />
+            </div>
           </div>
         </>
       )}

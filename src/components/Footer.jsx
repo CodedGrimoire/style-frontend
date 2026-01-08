@@ -155,59 +155,51 @@ const Footer = () => {
           
           <div className="footer-section">
             <h4 className="footer-heading">
-              
-              
               Business Hours
-              
-              </h4>
+            </h4>
             <ul className="footer-hours">
               <li>
-                <span className="day">
-                  
-                  Monday - Friday
-                  
-                  </span>
-                <span className="time">
-                  
-                  9:00 AM - 6:00 PM
-                  
-                  </span>
+                <span className="day">Monday - Friday</span>
+                <span className="time">9:00 AM - 6:00 PM</span>
               </li>
               <li>
-                <span className="day">
-                  
-                  Saturday
-                  
-                  </span>
-                <span className="time">
-                  
-                  10:00 AM - 4:00 PM
-                  
-                  
-                  </span>
+                <span className="day">Saturday</span>
+                <span className="time">10:00 AM - 4:00 PM</span>
               </li>
               <li>
-                <span className="day">
-                  
-                  Sunday
-                  
-                  </span>
-                <span className="time">
-                  
-                  Closed
-                  
-                  
-                  </span>
+                <span className="day">Sunday</span>
+                <span className="time">Closed</span>
               </li>
+            </ul>
+          </div>
+
+          <div className="footer-section">
+            <h4 className="footer-heading">
+              Support & Legal
+            </h4>
+            <ul className="footer-links">
+              <li><Link to="/help">Help & Support</Link></li>
+              <li><Link to="/privacy">Privacy Policy</Link></li>
+              <li><Link to="/terms">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
 
-       
         <div className="footer-bottom">
           <p className="footer-copyright">
             &copy; {new Date().getFullYear()} StyleDecor. All rights reserved.
           </p>
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <Link to="/privacy" style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textDecoration: 'none' }}>
+              Privacy
+            </Link>
+            <Link to="/terms" style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textDecoration: 'none' }}>
+              Terms
+            </Link>
+            <Link to="/help" style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textDecoration: 'none' }}>
+              Help
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

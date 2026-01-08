@@ -1,17 +1,11 @@
-import { useEffect, useState} from 'react';
-
+import { useEffect, useState } from 'react';
 import 'animate.css';
-
 import { useAuth } from '../context/AuthContext';
 import { getDecoratorProjects, updateProjectStatus, getMyBookings, cancelBooking } from '../services/api';
-
+import DashboardSidebar from '../components/DashboardSidebar';
 import toast from 'react-hot-toast';
-
-
 import { useNavigate } from 'react-router-dom';
-
 import Loading from '../components/Loading';
-
 import '../styles/dashboard.css';
 
 
@@ -408,77 +402,57 @@ const DecoratorDashboardPage = () => {
     
     </div>;
 
+  const { userProfile } = useAuth();
+
   return (
     <div className="dashboard-container">
+      <DashboardSidebar 
+        role="decorator" 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+      />
+      <div className="dashboard-main">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Decorator Dashboard</h1>
+          <p className="dashboard-subtitle">Manage your assigned projects and track your earnings</p>
+        </div>
 
+        {/* Overview Cards */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {projects.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Total Projects</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {projects.filter(p => p.status === 'completed').length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Completed</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              {todaySchedule.length}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Today's Schedule</div>
+          </div>
+          <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+              ${earnings.toFixed(2)}
+            </div>
+            <div style={{ color: 'var(--text-secondary)' }}>Total Earnings</div>
+          </div>
+        </div>
 
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">
-          
-          
-          
-          Decorator Dashboard
-          
-          </h1>
-        <p 
-        
-        className="dashboard-subtitle">
-          Manage your assigned projects and track your earnings
-          </p>
-      </div>
+        {/* Tabs hidden - using sidebar instead */}
 
-      <div className="dashboard-tabs">
-        <button
-          className={`dashboard-tab ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          My Profile
-
-
-        </button>
-        <button
-
-
-          className={`dashboard-tab ${activeTab === 'my-bookings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('my-bookings')}
-        >
-
-
-
-          My Bookings
-        </button>
-
-
-        <button
-          className={`dashboard-tab ${activeTab === 'payments' ? 'active' : ''}`}
-
-
-
-          onClick={() => setActiveTab('payments')}
-        >
-          Payment History
-        </button>
-
-
-        <button
-          className={`dashboard-tab ${activeTab === 'projects' ? 'active' : ''}`}
-
-
-          onClick={() => setActiveTab('projects')}
-        >
-          My Projects
-        </button>
-
-
-        <button
-          className={`dashboard-tab ${activeTab === 'schedule' ? 'active' : ''}`}
-          onClick={() => setActiveTab('schedule')}
-        >
-          Today's Schedule
-        </button>
-      </div>
-
-      <div className="dashboard-content">
+        <div className="dashboard-content">
        
         {activeTab === 'profile' && (
           <div className="dashboard-section animate__animated animate__fadeInUp">
@@ -1565,8 +1539,7 @@ const DecoratorDashboardPage = () => {
             )}
           </div>
         )}
-
-        
+        </div>
       </div>
     </div>
   );
