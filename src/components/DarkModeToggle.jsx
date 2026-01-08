@@ -4,7 +4,8 @@ import '../styles/components.css';
 const DarkModeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('theme');
-    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    // Default to light mode if no saved preference
+    return saved === 'dark';
   });
 
   useEffect(() => {
